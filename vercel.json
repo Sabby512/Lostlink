@@ -1,6 +1,9 @@
 {
   "outputDirectory": "public",
   "functions": {
-    "api/*.php": { "runtime": "vercel-php@0.7.4", "maxDuration": 30 }
-  }
+    "api/index.php": { "runtime": "vercel-php@0.7.4", "maxDuration": 30 }
+  },
+  "rewrites": [
+    { "source": "/api/:name([a-z_]+).php", "destination": "/api/index.php?_f=:name" }
+  ]
 }
