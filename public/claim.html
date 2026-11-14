@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claim this item – UCLM LostLink</title>
+<style>
+
+
+
+
+:root{--bg:#e9f1ef;--ink:#14284b;--muted:#3f4d66;--card:#fff;--amber:#f5a623;--badge:#fde7bd;--line:#14284b;--nav:#ffffffee}
+:root[data-theme="dark"]{--bg:#0f1a2e;--ink:#eaf0ff;--muted:#a9b6d0;--card:#18253f;--badge:#4a3a14;--line:#eaf0ff;--nav:#0f1a2eee}
+*{box-sizing:border-box;margin:0}
+body{font-family:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;transition:background .3s,color .3s}
+button{font:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:16px;padding:10px 28px;background:var(--nav);backdrop-filter:blur(8px);box-shadow:0 1px 0 rgba(20,40,75,.08);animation:navIn .7s cubic-bezier(.2,.8,.2,1) both;transition:padding .3s,box-shadow .3s}
+.nav.scrolled{padding:6px 28px;box-shadow:0 6px 24px rgba(20,40,75,.15)}
+@keyframes navIn{from{transform:translateY(-100%);opacity:0}to{transform:none;opacity:1}}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);line-height:1.15}
+.brand strong{font-size:20px}
+.brand small{display:block;font-size:14px;color:var(--muted)}
+.logo{width:50px;height:50px;border-radius:10px;background:#fff url(logo.png) center/82% no-repeat;box-shadow:inset 0 0 0 1.5px #d5deea;transition:transform .5s}
+.brand:hover .logo{transform:rotate(180deg) scale(1.1);border-radius:50%}
+.links{position:relative;display:flex;gap:6px;margin:0 0 0 auto}
+.links a{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:84px;padding:9px 16px;border-radius:999px;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;opacity:0;animation:linkIn .5s .3s forwards;transition:color .3s}
+.links a:nth-child(2){animation-delay:.4s}.links a:nth-child(3){animation-delay:.5s}.links a:nth-child(4){animation-delay:.6s}.links a:nth-child(5){animation-delay:.7s}
+@keyframes linkIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.links a svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s}
+.links a:hover{color:#1f6feb}
+.links a.active{color:#1f6feb}
+.links.ready a.active{color:#fff}
+html:not(.js) .links a.active{background:linear-gradient(135deg,#2f80ff,#1250c9);box-shadow:0 8px 18px rgba(31,111,235,.45)}
+.links a.pop svg{animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.35) translateY(-3px)}100%{transform:scale(1)}}
+.indicator{position:absolute;top:0;left:0;width:0;height:0;border-radius:999px;background:linear-gradient(135deg,#2f80ff,#1250c9);box-shadow:0 8px 18px rgba(31,111,235,.45);transition:transform .45s cubic-bezier(.3,1.25,.5,1),width .45s cubic-bezier(.3,1.25,.5,1),height .45s}
+.actions{display:flex;align-items:center;gap:8px;margin-left:20px}
+.pill{border:1px solid var(--line);background:transparent;border-radius:99px;padding:5px 12px;font-size:11px;transition:background .2s}
+.pill:hover{background:var(--badge)}
+
+/* BUTTONS */
+.btn{border-radius:8px;padding:12px 20px;font-size:13px;font-weight:700;border:1.5px solid var(--ink);transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(20,40,75,.2)}
+.btn:active{transform:translateY(0)}
+.small{padding:11px 24px;font-size:15px;font-weight:700;border-width:2.5px;border-radius:10px}
+.solid{background:var(--ink);color:#fff;border-color:var(--ink)}
+:root[data-theme="dark"] .solid{background:var(--amber);color:#14284b;border-color:var(--amber)}
+.ghost{background:transparent}
+.amber{background:var(--amber);border-color:var(--amber);color:#14284b}
+
+/* HERO */
+.hero{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:24px;max-width:1200px;margin:0 auto;padding:36px 28px}
+.badge{display:inline-block;background:var(--badge);padding:5px 12px;border-radius:99px;font-size:10px;font-weight:700;letter-spacing:.06em;margin-bottom:20px}
+h1{font-size:clamp(34px,5vw,56px);line-height:1.05;letter-spacing:-.02em;max-width:520px}
+.copy>p{max-width:480px;margin-top:20px;font-size:14px;line-height:1.6;color:var(--muted)}
+.search{display:flex;gap:8px;margin-top:22px;max-width:520px;background:var(--card);padding:8px;border-radius:12px;box-shadow:0 8px 30px rgba(20,40,75,.1);transition:box-shadow .2s}
+.search:focus-within{box-shadow:0 0 0 3px var(--amber),0 8px 30px rgba(20,40,75,.1)}
+.search input{flex:1;border:0;background:transparent;padding:0 10px;font:inherit;font-size:13px;color:var(--ink);outline:none}
+.popular{margin-top:12px!important;font-size:12px!important}
+.dot{margin:0 4px;font-size:12px;color:var(--muted)}
+.chip{border:0;background:none;font-weight:700;font-size:12px;padding:2px 4px;text-decoration:underline;text-decoration-color:transparent;transition:text-decoration-color .2s}
+.chip:hover{text-decoration-color:var(--amber)}
+.cta{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.result{min-height:20px;font-size:13px!important;font-weight:600;color:var(--ink)!important}
+.art img{width:100%;max-width:520px;display:block;margin-left:auto;animation:float 5s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-12px)}}
+
+/* MOBILE */
+.burger{display:none;margin-left:auto;background:none;border:0;width:36px;height:36px;position:relative}
+.burger span{position:absolute;left:7px;right:7px;height:2px;background:var(--ink);transition:transform .3s,top .3s}
+.burger span:first-child{top:12px}.burger span:last-child{top:22px}
+.burger.open span:first-child{top:17px;transform:rotate(45deg)}.burger.open span:last-child{top:17px;transform:rotate(-45deg)}
+@media(max-width:980px){
+  .nav{flex-wrap:wrap;padding:12px 20px}.burger{display:block}
+  .links,.actions{display:none;width:100%;flex-direction:column;gap:6px;margin:0}
+  .links.open,.actions.open{display:flex;animation:linkIn .3s both}
+  .indicator{display:none}
+  .links a{flex-direction:row;justify-content:flex-start;gap:12px;border-radius:14px}
+  .links a.active{background:#1f6feb}
+  .hero{grid-template-columns:1fr;padding:40px 20px}
+  .art img{margin:0 auto;max-width:360px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.links a{opacity:1}}
+
+/* DASHBOARD ADDITIONS */
+.nav .actions{margin-left:16px;gap:10px}
+.icon-btn{position:relative;width:38px;height:38px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--line);background:transparent;transition:background .2s,transform .3s}
+.icon-btn:hover{background:var(--badge);transform:translateY(-2px)}
+.icon-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#settings:hover svg{transform:rotate(90deg)}
+.icon-btn svg{transition:transform .4s}
+#bell:hover svg{animation:ring .6s}
+@keyframes ring{20%{transform:rotate(14deg)}40%{transform:rotate(-12deg)}60%{transform:rotate(8deg)}80%{transform:rotate(-4deg)}}
+.count{position:absolute;top:-4px;right:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:99px;background:#e5484d;color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center}
+.count[hidden]{display:none}
+.avatar{width:38px;height:38px;border-radius:50%;background:#dbe7ff;color:var(--ink);font-size:12px;font-weight:700;display:grid;place-items:center}
+:root[data-theme="dark"] .avatar{background:#2b3d63}
+.logout{display:flex;align-items:center;gap:6px;padding:8px 16px;font-size:13px;border-width:1.5px;border-radius:10px}
+.logout svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.dash{max-width:1200px;margin:0 auto;padding:28px 28px 48px}
+.hello{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:24px}
+.hello h1{font-size:clamp(28px,4vw,40px);max-width:none;margin-top:0}
+.hello .sub{margin-top:8px;font-size:14px;color:var(--muted)}
+.hello .search{margin-top:20px}
+.hello .art img{max-width:340px;animation-duration:5s}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
+.stat{background:var(--card);border-radius:14px;padding:18px 20px;box-shadow:0 6px 20px rgba(20,40,75,.07);transition:transform .25s,box-shadow .25s;animation:linkIn .5s both}
+.stat:nth-child(2){animation-delay:.08s}.stat:nth-child(3){animation-delay:.16s}.stat:nth-child(4){animation-delay:.24s}
+.stat:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(20,40,75,.14)}
+.stat span{font-size:13px;color:var(--muted)}
+.stat b{display:block;font-size:34px;line-height:1.2;margin:4px 0}
+.stat small{font-size:12px;font-weight:700;color:#1b6b3a}
+:root[data-theme="dark"] .stat small{color:#6fe3a0}
+.panels{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;margin-top:16px}
+.panel{background:var(--card);border-radius:14px;padding:22px;box-shadow:0 6px 20px rgba(20,40,75,.07);min-height:220px}
+.panel header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.panel h2{font-size:15px}
+.panel header a{font-size:12px;font-weight:700;color:var(--ink);text-decoration:none}
+.panel header a:hover{text-decoration:underline}
+.empty{display:grid;place-items:center;text-align:center;gap:6px;padding:28px 12px;color:var(--muted);font-size:13px;min-height:140px}
+.empty strong{color:var(--ink);font-size:14px}
+.match{display:flex;gap:16px}
+.match .photo{width:150px;height:120px;border-radius:10px;background:linear-gradient(135deg,#dbe7ff,#c3d4f7);display:grid;place-items:center;font-size:12px;color:var(--muted);overflow:hidden;flex:none}
+.match .photo img{width:100%;height:100%;object-fit:contain}
+.match h3{font-size:15px}
+.match p{font-size:13px;color:var(--muted);line-height:1.5;margin:6px 0 12px}
+.tag{display:inline-block;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:600;margin-right:8px;background:var(--badge)}
+.notes{list-style:none;padding:0}
+.notes li{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(20,40,75,.1);font-size:13px}
+.notes li:last-child{border:0}
+.notes b{display:block}.notes small{color:var(--muted)}
+.tag.approved{background:#d6f3e0}.tag.rejected{background:#fbd9dc}
+@media(max-width:980px){
+  .hello,.panels{grid-template-columns:1fr}
+  .hello .art{display:none}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .dash{padding:20px}
+  .actions.open{align-items:flex-start;flex-direction:row;flex-wrap:wrap}
+}
+
+/* SEARCH PAGE */
+.page{max-width:1200px;margin:0 auto;padding:28px 28px 48px;display:grid;grid-template-columns:260px 1fr;gap:28px;align-items:start}
+.filters{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 6px 20px rgba(20,40,75,.07);position:sticky;top:96px}
+.filters h2{font-size:14px;margin-bottom:12px}
+.filters h3{font-size:12px;margin:16px 0 8px}
+.field,.filters select{width:100%;border:1px solid rgba(20,40,75,.15);background:var(--bg);color:var(--ink);border-radius:8px;padding:10px 12px;font:inherit;font-size:12px}
+.checks label{display:flex;align-items:center;gap:8px;font-size:12px;margin:8px 0;cursor:pointer}
+.checks input{appearance:none;width:16px;height:16px;border:1.5px solid var(--ink);border-radius:4px;background:var(--card);display:grid;place-items:center;cursor:pointer;margin:0}
+.checks input:checked{background:var(--ink)}
+.checks input:checked::after{content:"";width:8px;height:4px;border:2px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.main h1{font-size:30px;margin:0 0 16px;max-width:none}
+.notice{background:#fdf0d0;border:1px solid #f1d9a0;border-radius:12px;padding:14px 18px;margin-bottom:16px;font-size:12px;line-height:1.5;color:#3d3a2e}
+.notice strong{display:block;font-size:14px;margin-bottom:2px;color:var(--ink)}
+:root[data-theme="dark"] .notice{background:#3a3016;border-color:#5a4a1d;color:#e8dcc0}
+.main .search{max-width:none;margin:0 0 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.card{background:var(--card);border-radius:14px;padding:10px;box-shadow:0 6px 20px rgba(20,40,75,.07);transition:transform .25s,box-shadow .25s;animation:linkIn .4s both}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(20,40,75,.14)}
+.photo{height:100px;border-radius:10px;background:linear-gradient(135deg,#dbe7ff,#c3d4f7);display:grid;place-items:center;font-size:11px;color:var(--muted);overflow:hidden}
+.photo img{width:100%;height:100%;object-fit:contain}
+.row{display:flex;justify-content:space-between;align-items:center;margin:10px 0 4px}
+.row b{font-size:14px}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:10px;font-weight:600;background:var(--badge)}
+.tag.available{background:#d6f3e0;color:#1b6b3a}.tag.matched{background:var(--badge);color:#14284b}.tag.returned{background:#e1e6f0;color:#3f4d66}
+.tag.t-lost{background:#fbd9dc;color:#8a2230}.tag.t-found{background:#d6e6ff;color:#1a4a99}
+.meta{font-size:12px;color:var(--muted);margin-bottom:10px}
+.card .btn{padding:6px 16px;font-size:12px}
+.empty{grid-column:1/-1;background:var(--card);border-radius:14px;padding:48px 20px;text-align:center;color:var(--muted);font-size:13px;box-shadow:0 6px 20px rgba(20,40,75,.07)}
+.empty strong{display:block;color:var(--ink);font-size:15px;margin-bottom:6px}
+.empty .cta{justify-content:center}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(10,20,40,.55);display:none;place-items:center;z-index:50;padding:20px}
+.overlay.open{display:grid}
+.modal{background:var(--card);border-radius:16px;padding:24px;width:100%;max-width:480px;max-height:90vh;overflow:auto;animation:navIn .35s both}
+.modal h2{font-size:20px;margin-bottom:4px}
+.modal .sub{font-size:12px;color:var(--muted);margin-bottom:16px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.seg label{border:1.5px solid var(--ink);border-radius:10px;padding:10px;text-align:center;font-size:13px;font-weight:700;cursor:pointer}
+.seg input{display:none}
+.seg label:has(input:checked){background:var(--ink);color:#fff}
+:root[data-theme="dark"] .seg label:has(input:checked){background:var(--amber);color:#14284b;border-color:var(--amber)}
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:12px;font-weight:700;margin-bottom:4px}
+.fg textarea{resize:vertical;min-height:70px}
+.fg small{font-size:11px;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mfoot{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:60;animation:linkIn .3s both}
+@media(max-width:980px){.page{grid-template-columns:1fr;padding:20px}.filters{position:static}}
+
+/* ITEM PAGE */
+.item{max-width:1200px;margin:0 auto;padding:28px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;align-items:start}
+.col{display:grid;gap:20px}
+.box{background:var(--card);border-radius:14px;padding:22px;box-shadow:0 6px 20px rgba(20,40,75,.07);animation:linkIn .5s both}
+.box:nth-child(2){animation-delay:.08s}
+.item .photo{height:220px;border-radius:10px;font-size:13px}
+.box h2{font-size:15px;margin-bottom:12px}
+.box h1{font-size:28px;margin-bottom:6px;max-width:none}
+.lead{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:14px}
+.kv{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid rgba(20,40,75,.1);font-size:13px}
+.kv span:first-child{color:var(--muted)}
+.kv b{font-size:13px}
+.hid{font-size:11px;font-weight:700}
+.foot{font-size:12px;color:var(--muted);line-height:1.5;margin-top:14px}
+.steps{list-style:none;padding:0;margin:0 0 18px}
+.steps li{display:flex;gap:12px;margin-bottom:14px;font-size:13px}
+.steps i{flex:none;width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;font-style:normal;font-size:12px;font-weight:700;display:grid;place-items:center}
+:root[data-theme="dark"] .steps i{background:var(--amber);color:#14284b}
+.steps b{display:block}.steps small{color:var(--muted);font-size:12px}
+.claim{width:100%;padding:14px;font-size:14px}
+.claim[disabled]{opacity:.6;cursor:default;transform:none;box-shadow:none}
+.notsure{text-align:center;font-size:12px;color:var(--muted);margin-top:14px}
+.notsure a{color:var(--ink);font-weight:700}
+.missing{grid-column:1/-1;text-align:center;padding:60px 20px}
+@media(max-width:980px){.item{grid-template-columns:1fr;padding:20px}}
+
+/* CLAIM PAGE */
+.claimbox h1{font-size:30px;margin-bottom:6px}
+.claimbox .fg{margin-top:16px}
+.claimbox textarea.field{min-height:120px;resize:vertical}
+.check{display:flex;align-items:center;gap:10px;font-size:13px;margin:16px 0 10px;cursor:pointer}
+.check input{appearance:none;width:18px;height:18px;border:1.5px solid var(--ink);border-radius:4px;background:var(--card);margin:0;display:grid;place-items:center;cursor:pointer;flex:none}
+.check input:checked{background:var(--ink)}
+.check input:checked::after{content:"";width:9px;height:5px;border:2px solid #fff;border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.btns{display:flex;gap:10px;margin-top:16px}
+.btns .btn{color:inherit;text-decoration:none;display:inline-block;padding:12px 22px}
+.err{color:#b3261e;font-size:12px;font-weight:600;margin-top:8px;min-height:16px}
+.done{text-align:center;padding:12px 0}
+.done .tick{width:54px;height:54px;border-radius:50%;background:#d6f3e0;color:#1b6b3a;display:grid;place-items:center;margin:0 auto 14px;font-size:26px;font-weight:700}
+.code{display:inline-block;background:var(--bg);border-radius:8px;padding:6px 14px;font-weight:700;letter-spacing:.06em;margin:8px 0 14px}
+.fname{font-size:11px;color:var(--muted);margin-top:4px}
+/* Area dropdown: opens BELOW the field in one neat scrollable box (the browser's own list was opening upwards) */
+.dd{position:relative}
+.dd>select{display:none}
+.dd-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:left;cursor:pointer}
+.dd-btn::after{content:"";flex:none;width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .15s}
+.dd.open .dd-btn::after{transform:rotate(-135deg) translateY(-2px)}
+.dd.open .dd-btn,.dd-btn:focus-visible{outline:none;border-color:var(--amber)}
+.dd-ph{opacity:.7}
+.dd-list{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:60;max-height:236px;overflow-y:auto;margin:0;padding:4px;list-style:none;background:var(--card);color:var(--ink);border:1px solid rgba(20,40,75,.18);border-radius:10px;box-shadow:0 14px 30px rgba(20,40,75,.2)}
+.dd.open .dd-list{display:block}
+.dd-opt{padding:8px 10px;border-radius:7px;font-size:13px;cursor:pointer}
+.dd-opt.hl,.dd-opt:hover{background:var(--badge)}
+.dd-opt[aria-selected="true"]{font-weight:800}
+</style>
+<style>.tag.claimed,.tag.pending{background:#fdebc8;color:#7a5200}.photo,.thumb,.ph{background-color:#eef2f8}</style>
+<style id="ll-photo">
+/* photos fill their frame at their own proportions: whole picture, no empty bands */
+.photo{height:auto !important;min-height:0;background:none}
+.photo:not(:has(img)){min-height:96px;background:linear-gradient(135deg,#dbe7ff,#c3d4f7)}
+.photo img,.match .photo img{display:block;width:100%;height:auto !important;max-height:520px;object-fit:contain}
+.item .photo,.match .photo{height:auto !important}
+.thumb img{object-fit:cover !important}
+.rep .fg label.drop:has(img),.drop:has(img){height:auto !important;min-height:124px}
+.drop:has(img)>:not(img):not(input){display:none !important}
+label.drop img,.drop img{position:relative !important;inset:auto !important;width:100%;height:auto !important;max-height:420px;object-fit:contain}
+</style>
+</head>
+<body>
+<header class="nav" id="nav">
+  <a href="#" class="brand">
+    <span class="logo"></span>
+    <span><strong>UCLM LostLink</strong><small>Campus Lost and Found</small></span>
+  </a>
+  <button class="burger" id="burger" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span></button>
+  <nav class="links" id="links">
+    <a href="dashboard.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span>Home</span></a>
+    <a href="search.html" class="active"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Search Items</span></a>
+    <a href="report-lost.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><span>Report Lost</span></a>
+    <a href="report-found.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 11V7.5L12 3 3.5 7.5v9L12 21l3-1.6"/><path d="M3.5 7.5L12 12l8.5-4.5M12 12v4"/><path d="M8 5.2l8.5 4.5"/><circle cx="18" cy="17.5" r="2.6"/><path d="M20 19.5l1.8 1.8"/></svg><span>Report Found</span></a>
+    <a href="my-claims.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4M10 13h6M10 17h6"/></svg><span>My Claims</span></a>
+    <span class="indicator" id="indicator"></span>
+  </nav>
+  <div class="actions">
+    <button class="icon-btn" id="bell" aria-label="Notifications"><svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 0112 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="count" id="bellCount" hidden>0</span></button>
+    <button class="icon-btn" id="settings" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button>
+    <button class="btn ghost logout"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Log out</button>
+    <span class="avatar" id="avatar">--</span>
+  </div>
+</header>
+
+<main class="item" id="view">
+  <div class="col">
+    <section class="box"><div class="photo" id="photo">Item photo</div></section>
+    <section class="box">
+      <h2>You are claiming</h2>
+      <div class="kv"><span>Item</span><b id="vName">–</b></div>
+      <div class="kv"><span>General area</span><b id="vArea">–</b></div>
+      <div class="kv"><span>Status</span><span class="tag" id="vStatus">–</span></div>
+    </section>
+  </div>
+
+  <section class="box claimbox" id="formBox">
+    <h1>Claim this item</h1>
+    <p class="lead">Tell us what only the owner would know. An admin checks it before anything is returned.</p>
+    <form id="claimForm" novalidate>
+      <div class="fg"><label for="cname">Item name *</label>
+        <input class="field" id="cname" maxlength="160" placeholder="e.g. Aquaflask, black wallet"></div>
+      <div class="fg"><label for="ccat">Item category *</label>
+        <select class="field" id="ccat"><option value="" disabled selected>Select category</option><option>Wallets</option><option>IDs</option><option>Bottles</option><option>Keys</option><option>Phones</option><option>Bags</option><option>Books</option><option>Others</option></select><input class="field" id="ccatOther" maxlength="60" placeholder="Type the item, e.g. mini fan, watch" style="display:none;margin-top:8px" aria-label="Type the item"></div>
+      <div class="fg"><label for="ccolor">Item color *</label>
+        <input class="field" id="ccolor" maxlength="60" placeholder="e.g. Black, blue with white stripes"></div>
+      <div class="fg"><label for="carea">General area *</label>
+        <select class="field" id="carea"><option value="" disabled selected>Select area</option><option>Old Building</option><option>Annex 2 Building</option><option>Carpentry Area</option><option>Basic Ed. Building</option><option>Motorcycle Parking Area</option><option>Canteen</option><option>New Building</option><option>NSA Building</option><option>GYM</option><option>Chapel</option><option>Morning Station</option><option>Swimming Pool</option><option>Machine Shop</option><option>ME ROOM</option><option>Business Building</option><option>Gate</option><option>Others</option></select></div>
+      <div class="fg"><label for="cloc">Exact last seen location *</label>
+        <input class="field" id="cloc" maxlength="200" placeholder="e.g. Old Building, 2nd floor, near the stairs"></div>
+      <div class="fg"><label for="cdate">Date/time lost *</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input class="field" type="date" id="cdate" aria-label="Date lost"><input class="field" type="time" id="ctime" aria-label="Time lost"></div></div>
+      <div class="fg"><label for="proof">Proof of ownership *</label>
+        <textarea class="field" id="proof" placeholder="Describe the contents, marks or ID inside"></textarea></div>
+      <div class="fg"><label for="proofFile">Proof photo or file (optional)</label>
+        <input class="field" type="file" id="proofFile" accept="image/*,.pdf"><div class="fname" id="fname"></div></div>
+      <label class="check"><input type="checkbox" id="confirm"> I confirm this item belongs to me</label>
+      <p class="lead" style="margin:0">A Claim ID is created and the claim is saved as Pending.</p>
+      <div class="err" id="err" role="alert"></div>
+      <div class="btns"><button type="submit" class="btn amber">Submit Claim</button><a class="btn ghost" id="cancel" href="search.html">Cancel</a></div>
+    </form>
+  </section>
+
+  <section class="box">
+    <h1 style="font-size:20px">What happens next</h1>
+    <ol class="steps" style="margin-top:14px">
+      <li><i>1</i><div><b>Claim saved</b><small>Status is Pending.</small></div></li>
+      <li><i>2</i><div><b>Admin reviews</b><small>Your proof is checked.</small></div></li>
+      <li><i>3</i><div><b>You are notified</b><small>Approved or rejected.</small></div></li>
+      <li><i>4</i><div><b>Pick up item</b><small>Bring your student ID.</small></div></li>
+    </ol>
+  </section>
+</main>
+<script src="db.js"></script>
+<script>
+
+document.documentElement.classList.add('js');
+const nav=document.getElementById('nav'),indicator=document.getElementById('indicator'),burger=document.getElementById('burger');
+function moveTo(el){indicator.style.width=el.offsetWidth+'px';indicator.style.height=el.offsetHeight+'px';indicator.style.transform=`translate(${el.offsetLeft}px, ${el.offsetTop}px)`}
+const current=()=>document.querySelector('.links a.active');
+window.addEventListener('resize',()=>moveTo(current()));
+function initPill(){const box=document.getElementById('links');indicator.style.transition='none';moveTo(current());void indicator.offsetWidth;indicator.style.transition='';box.classList.add('ready')}
+initPill();window.addEventListener('load',initPill);if(document.fonts)document.fonts.ready.then(initPill);
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>10));
+burger.addEventListener('click',()=>{const o=burger.classList.toggle('open');burger.setAttribute('aria-expanded',o);document.getElementById('links').classList.toggle('open',o);document.querySelector('.actions').classList.toggle('open',o)});
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const STATUS={available:'Available',matched:'Matched',claimed:'Claimed',pending:'Pending',returned:'Returned'};
+const bc=$('bellCount');bc.textContent=0;bc.hidden=true;
+
+let item=null,proofFile=null;
+async function init(){
+  const id=new URLSearchParams(location.search).get('id');
+  item=id?await LostLinkDB.get(id):null;
+  if(!item){
+    $('view').innerHTML=`<div class="box missing"><h1>Item not found</h1><p class="lead">Pick an item from Search Items to claim it.</p><a class="btn solid" href="search.html" style="text-decoration:none;display:inline-block">Back to Search Items</a></div>`;
+    return;
+  }
+  $('photo').innerHTML=item.photo?`<img src="${esc(item.photo)}" alt="">`:'Item photo';
+  $('vName').textContent=item.name;
+  $('vArea').textContent=item.area;
+  const st=$('vStatus');st.textContent=STATUS[item.status]||item.status;st.className='tag '+item.status;
+  $('cancel').href='item.html?id='+encodeURIComponent(item.id);
+  if(item.status==='returned'){$('formBox').innerHTML='<div class="done"><h1 style="font-size:24px">This item is no longer available</h1><p class="lead">It has already been claimed and returned to its owner.</p><div class="btns" style="justify-content:center"><a class="btn ghost" href="search.html">Back to search</a></div></div>';return}
+  const prev=(await LostLinkDB.claims()).find(c=>c.itemId===item.id);
+  if(prev)showDone(prev,true);
+}
+function showDone(c,again){
+  $('formBox').innerHTML=`<div class="done"><div class="tick">✓</div><h1 style="font-size:24px">${again?'You already claimed this item':'Claim saved'}</h1>
+    <p class="lead">Status: Pending. An admin will review your proof.</p><div class="code">${esc(c.claimId)}</div>
+    <div class="btns" style="justify-content:center"><a class="btn amber" href="my-claims.html" style="color:#14284b">View my claims</a><a class="btn ghost" href="search.html">Back to search</a></div></div>`;
+}
+$('proofFile').addEventListener('change',e=>{
+  const f=e.target.files[0];proofFile=null;$('fname').textContent='';if(!f)return;
+  if(f.size>5*1024*1024){e.target.value='';$('fname').textContent='File is too large (max 5 MB).';return}
+  $('fname').textContent=f.name;
+  if(f.type.startsWith('image/')){
+    const img=new Image(),url=URL.createObjectURL(f);
+    img.onload=()=>{const s=Math.min(1,800/img.width),c=document.createElement('canvas');c.width=img.width*s;c.height=img.height*s;
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);proofFile={name:f.name,data:c.toDataURL('image/jpeg',.75)};URL.revokeObjectURL(url)};
+    img.src=url;
+  }else{const r=new FileReader();r.onload=()=>{proofFile={name:f.name,data:r.result}};r.readAsDataURL(f)}   // PDF: uploaded to the server as-is
+});
+function catValue(){const v=$('ccat').value;if(v!=='Others')return v;const t=$('ccatOther').value.trim();return t?t.charAt(0).toUpperCase()+t.slice(1):''}
+$('ccat').addEventListener('change',()=>{const o=$('ccat').value==='Others';$('ccatOther').style.display=o?'':'none';if(o)$('ccatOther').focus()});
+$('claimForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const proof=$('proof').value.trim(),err=$('err');err.textContent='';
+  if(!$('cname').value.trim()){err.textContent='Please enter the item name.';$('cname').focus();return}
+  if(!$('ccat').value){err.textContent='Please choose the item category.';$('ccat').focus();return}
+  if($('ccat').value==='Others'&&!catValue()){err.textContent='Please type what kind of item it is (e.g. mini fan, watch).';$('ccatOther').focus();return}
+  if(!$('ccolor').value.trim()){err.textContent='Please enter the item color.';$('ccolor').focus();return}
+  if(!$('carea').value){err.textContent='Please choose the general area.';$('carea').focus();return}
+  if(!$('cloc').value.trim()){err.textContent='Please enter the exact last seen location.';$('cloc').focus();return}
+  if(!$('cdate').value||!$('ctime').value){err.textContent='Please enter the date and time you lost it.';($('cdate').value?$('ctime'):$('cdate')).focus();return}
+  if(!proof){err.textContent='Please describe your proof of ownership.';$('proof').focus();return}
+  if(!$('confirm').checked){err.textContent='Please confirm this item belongs to you.';return}
+  let saved;
+  try{saved=await LostLinkDB.addClaim({itemId:item.id,proof,proofFile,confirmed:true,itemName:$('cname').value.trim(),category:catValue(),color:$('ccolor').value.trim(),area:$('carea').value,location:$('cloc').value.trim(),date:$('cdate').value+' '+$('ctime').value})}
+  catch(x){err.textContent=x.message||'Could not save your claim. Please try again.';return}
+  showDone(saved,false);
+});
+init();
+</script>
+<script>
+/* Turns the area <select> into the neat dropdown above. The real <select> stays in the page (hidden), so every existing line of code that reads or listens to it keeps working. */
+(function(){
+function ddEnhance(sel){
+  if(!sel||sel.dataset.dd)return;sel.dataset.dd='1';
+  var wrap=document.createElement('div');wrap.className='dd';sel.parentNode.insertBefore(wrap,sel);wrap.appendChild(sel);
+  var btn=document.createElement('button');btn.type='button';btn.className='field dd-btn';btn.setAttribute('aria-haspopup','listbox');btn.setAttribute('aria-expanded','false');
+  var list=document.createElement('ul');list.className='dd-list';list.setAttribute('role','listbox');
+  wrap.appendChild(btn);wrap.appendChild(list);
+  var opts=[].filter.call(sel.options,function(o){return !o.disabled}),hl=-1;
+  opts.forEach(function(o,i){var li=document.createElement('li');li.className='dd-opt';li.setAttribute('role','option');li.textContent=o.text;li.onclick=function(){pick(i)};list.appendChild(li)});
+  function sync(){var o=sel.options[sel.selectedIndex];btn.textContent=o?o.text:'';btn.classList.toggle('dd-ph',!!(o&&o.disabled));[].forEach.call(list.children,function(li,i){li.setAttribute('aria-selected',opts[i]===o?'true':'false')})}
+  function mark(i){hl=i;[].forEach.call(list.children,function(li,k){li.classList.toggle('hl',k===i)});if(list.children[i])list.children[i].scrollIntoView({block:'nearest'})}
+  function open(){sync();wrap.classList.add('open');btn.setAttribute('aria-expanded','true');var cur=opts.indexOf(sel.options[sel.selectedIndex]);mark(cur);if(cur<0)list.scrollTop=0;list.scrollIntoView({block:'nearest',behavior:'smooth'})}
+  function close(){wrap.classList.remove('open');btn.setAttribute('aria-expanded','false')}
+  function pick(i){sel.value=opts[i].value;sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}));sync();close();btn.focus()}
+  btn.onclick=function(){wrap.classList.contains('open')?close():open()};
+  btn.onkeydown=function(e){
+    var k=e.key,isOpen=wrap.classList.contains('open');
+    if(k==='ArrowDown'||k==='ArrowUp'){e.preventDefault();if(!isOpen)return open();mark(Math.max(0,Math.min(opts.length-1,hl+(k==='ArrowDown'?1:-1))))}
+    else if(k==='Home'||k==='End'){if(isOpen){e.preventDefault();mark(k==='Home'?0:opts.length-1)}}
+    else if(k==='Enter'||k===' '){e.preventDefault();isOpen&&hl>=0?pick(hl):open()}
+    else if(k==='Escape'||k==='Tab'){close()}
+    else if(k.length===1){var s=k.toLowerCase(),n=opts.length;for(var j=1;j<=n;j++){var i=((isOpen?hl:-1)+j)%n;if(opts[i].text.toLowerCase().indexOf(s)===0){if(!isOpen)open();mark(i);break}}}
+  };
+  document.addEventListener('click',function(e){if(!wrap.contains(e.target))close()});
+  var lab=document.querySelector('label[for="'+sel.id+'"]');if(lab)lab.addEventListener('click',function(e){e.preventDefault();btn.focus()});
+  sel.focus=function(){btn.focus()};                       // "please choose the area" focuses the visible button
+  if(sel.form)sel.form.addEventListener('reset',function(){setTimeout(sync,0)});
+  sync();
+}
+['area','carea','areaSel'].forEach(function(id){ddEnhance(document.getElementById(id))});
+})();
+</script>
+</body>
+</html>

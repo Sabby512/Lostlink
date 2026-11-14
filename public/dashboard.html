@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard – UCLM LostLink</title>
+<style>
+
+:root{--bg:#e9f1ef;--ink:#14284b;--muted:#3f4d66;--card:#fff;--amber:#f5a623;--badge:#fde7bd;--line:#14284b;--nav:#ffffffee}
+:root[data-theme="dark"]{--bg:#0f1a2e;--ink:#eaf0ff;--muted:#a9b6d0;--card:#18253f;--badge:#4a3a14;--line:#eaf0ff;--nav:#0f1a2eee}
+*{box-sizing:border-box;margin:0}
+body{font-family:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;transition:background .3s,color .3s}
+button{font:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:16px;padding:10px 28px;background:var(--nav);backdrop-filter:blur(8px);box-shadow:0 1px 0 rgba(20,40,75,.08);animation:navIn .7s cubic-bezier(.2,.8,.2,1) both;transition:padding .3s,box-shadow .3s}
+.nav.scrolled{padding:6px 28px;box-shadow:0 6px 24px rgba(20,40,75,.15)}
+@keyframes navIn{from{transform:translateY(-100%);opacity:0}to{transform:none;opacity:1}}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);line-height:1.15}
+.brand strong{font-size:20px}
+.brand small{display:block;font-size:14px;color:var(--muted)}
+.logo{width:50px;height:50px;border-radius:10px;background:#fff url(logo.png) center/82% no-repeat;box-shadow:inset 0 0 0 1.5px #d5deea;transition:transform .5s}
+.brand:hover .logo{transform:rotate(180deg) scale(1.1);border-radius:50%}
+.links{position:relative;display:flex;gap:6px;margin:0 0 0 auto}
+.links a{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:84px;padding:9px 16px;border-radius:999px;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;opacity:0;animation:linkIn .5s .3s forwards;transition:color .3s}
+.links a:nth-child(2){animation-delay:.4s}.links a:nth-child(3){animation-delay:.5s}.links a:nth-child(4){animation-delay:.6s}.links a:nth-child(5){animation-delay:.7s}
+@keyframes linkIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.links a svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s}
+.links a:hover{color:#1f6feb}
+.links a.active{color:#1f6feb}
+.links.ready a.active{color:#fff}
+html:not(.js) .links a.active{background:linear-gradient(135deg,#2f80ff,#1250c9);box-shadow:0 8px 18px rgba(31,111,235,.45)}
+.links a.pop svg{animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.35) translateY(-3px)}100%{transform:scale(1)}}
+.indicator{position:absolute;top:0;left:0;width:0;height:0;border-radius:999px;background:linear-gradient(135deg,#2f80ff,#1250c9);box-shadow:0 8px 18px rgba(31,111,235,.45);transition:transform .45s cubic-bezier(.3,1.25,.5,1),width .45s cubic-bezier(.3,1.25,.5,1),height .45s}
+.actions{display:flex;align-items:center;gap:8px;margin-left:20px}
+.pill{border:1px solid var(--line);background:transparent;border-radius:99px;padding:5px 12px;font-size:11px;transition:background .2s}
+.pill:hover{background:var(--badge)}
+
+/* BUTTONS */
+.btn{border-radius:8px;padding:12px 20px;font-size:13px;font-weight:700;border:1.5px solid var(--ink);transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(20,40,75,.2)}
+.btn:active{transform:translateY(0)}
+.small{padding:11px 24px;font-size:15px;font-weight:700;border-width:2.5px;border-radius:10px}
+.solid{background:var(--ink);color:#fff;border-color:var(--ink)}
+:root[data-theme="dark"] .solid{background:var(--amber);color:#14284b;border-color:var(--amber)}
+.ghost{background:transparent}
+.amber{background:var(--amber);border-color:var(--amber);color:#14284b}
+
+/* HERO */
+.hero{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:24px;max-width:1200px;margin:0 auto;padding:36px 28px}
+.badge{display:inline-block;background:var(--badge);padding:5px 12px;border-radius:99px;font-size:10px;font-weight:700;letter-spacing:.06em;margin-bottom:20px}
+h1{font-size:clamp(34px,5vw,56px);line-height:1.05;letter-spacing:-.02em;max-width:520px}
+.copy>p{max-width:480px;margin-top:20px;font-size:14px;line-height:1.6;color:var(--muted)}
+.search{display:flex;gap:8px;margin-top:22px;max-width:520px;background:var(--card);padding:8px;border-radius:12px;box-shadow:0 8px 30px rgba(20,40,75,.1);transition:box-shadow .2s}
+.search:focus-within{box-shadow:0 0 0 3px var(--amber),0 8px 30px rgba(20,40,75,.1)}
+.search input{flex:1;border:0;background:transparent;padding:0 10px;font:inherit;font-size:13px;color:var(--ink);outline:none}
+.popular{margin-top:12px!important;font-size:12px!important}
+.dot{margin:0 4px;font-size:12px;color:var(--muted)}
+.chip{border:0;background:none;font-weight:700;font-size:12px;padding:2px 4px;text-decoration:underline;text-decoration-color:transparent;transition:text-decoration-color .2s}
+.chip:hover{text-decoration-color:var(--amber)}
+.cta{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.result{min-height:20px;font-size:13px!important;font-weight:600;color:var(--ink)!important}
+.art img{width:100%;max-width:520px;display:block;margin-left:auto;animation:float 5s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-12px)}}
+
+/* MOBILE */
+.burger{display:none;margin-left:auto;background:none;border:0;width:36px;height:36px;position:relative}
+.burger span{position:absolute;left:7px;right:7px;height:2px;background:var(--ink);transition:transform .3s,top .3s}
+.burger span:first-child{top:12px}.burger span:last-child{top:22px}
+.burger.open span:first-child{top:17px;transform:rotate(45deg)}.burger.open span:last-child{top:17px;transform:rotate(-45deg)}
+@media(max-width:980px){
+  .nav{flex-wrap:wrap;padding:12px 20px}.burger{display:block}
+  .links,.actions{display:none;width:100%;flex-direction:column;gap:6px;margin:0}
+  .links.open,.actions.open{display:flex;animation:linkIn .3s both}
+  .indicator{display:none}
+  .links a{flex-direction:row;justify-content:flex-start;gap:12px;border-radius:14px}
+  .links a.active{background:#1f6feb}
+  .hero{grid-template-columns:1fr;padding:40px 20px}
+  .art img{margin:0 auto;max-width:360px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.links a{opacity:1}}
+
+/* DASHBOARD ADDITIONS */
+.nav .actions{margin-left:16px;gap:10px}
+.icon-btn{position:relative;width:38px;height:38px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--line);background:transparent;transition:background .2s,transform .3s}
+.icon-btn:hover{background:var(--badge);transform:translateY(-2px)}
+.icon-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#settings:hover svg{transform:rotate(90deg)}
+.icon-btn svg{transition:transform .4s}
+#bell:hover svg{animation:ring .6s}
+@keyframes ring{20%{transform:rotate(14deg)}40%{transform:rotate(-12deg)}60%{transform:rotate(8deg)}80%{transform:rotate(-4deg)}}
+.count{position:absolute;top:-4px;right:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:99px;background:#e5484d;color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center}
+.count[hidden]{display:none}
+.avatar{width:38px;height:38px;border-radius:50%;background:#dbe7ff;color:var(--ink);font-size:12px;font-weight:700;display:grid;place-items:center}
+:root[data-theme="dark"] .avatar{background:#2b3d63}
+.logout{display:flex;align-items:center;gap:6px;padding:8px 16px;font-size:13px;border-width:1.5px;border-radius:10px}
+.logout svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.dash{max-width:none;width:100%;margin:0;padding:28px 40px 48px}   /* full width: no empty side space */
+.hello{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:24px}
+.hello h1{font-size:clamp(28px,4vw,40px);max-width:none;margin-top:0}
+.hello .sub{margin-top:8px;font-size:14px;color:var(--muted)}
+.hello .search{margin-top:20px}
+.hello .art img{max-width:340px;animation-duration:5s}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
+.stat{background:var(--card);border-radius:14px;padding:18px 20px;box-shadow:0 6px 20px rgba(20,40,75,.07);transition:transform .25s,box-shadow .25s;animation:linkIn .5s both}
+.stat:nth-child(2){animation-delay:.08s}.stat:nth-child(3){animation-delay:.16s}.stat:nth-child(4){animation-delay:.24s}
+.stat:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(20,40,75,.14)}
+.stat span{font-size:13px;color:var(--muted)}
+.stat b{display:block;font-size:34px;line-height:1.2;margin:4px 0}
+.stat small{font-size:12px;font-weight:700;color:#1b6b3a}
+:root[data-theme="dark"] .stat small{color:#6fe3a0}
+.panels{display:grid;grid-template-columns:1.2fr 1fr;gap:16px;margin-top:16px}
+.panel{background:var(--card);border-radius:14px;padding:22px;box-shadow:0 6px 20px rgba(20,40,75,.07);min-height:220px}
+.panel header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.panel h2{font-size:15px}
+.panel header a{font-size:12px;font-weight:700;color:var(--ink);text-decoration:none}
+.panel header a:hover{text-decoration:underline}
+.empty{display:grid;place-items:center;text-align:center;gap:6px;padding:28px 12px;color:var(--muted);font-size:13px;min-height:140px}
+.empty strong{color:var(--ink);font-size:14px}
+.match{display:flex;gap:16px}
+.match .photo{width:150px;height:120px;border-radius:10px;background:linear-gradient(135deg,#dbe7ff,#c3d4f7);display:grid;place-items:center;font-size:12px;color:var(--muted);overflow:hidden;flex:none}
+.match .photo img{width:100%;height:100%;object-fit:contain}
+.match h3{font-size:15px}
+.match p{font-size:13px;color:var(--muted);line-height:1.5;margin:6px 0 12px}
+.tag{display:inline-block;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:600;margin-right:8px;background:var(--badge)}
+.notes{list-style:none;padding:0}
+.notes li{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(20,40,75,.1);font-size:13px}
+.notes li:last-child{border:0}
+.notes b{display:block}.notes small{color:var(--muted)}
+.tag.approved{background:#d6f3e0}.tag.rejected{background:#fbd9dc}
+@media(max-width:980px){
+  .hello,.panels{grid-template-columns:1fr}
+  .hello .art{display:none}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .dash{padding:20px}
+  .actions.open{align-items:flex-start;flex-direction:row;flex-wrap:wrap}
+}
+
+/* NEW DASHBOARD LAYOUT */
+.dash{max-width:none;width:100%;margin:0;padding:28px 40px 48px}   /* full width: no empty side space */
+.hello2 h1{font-size:clamp(26px,3.4vw,34px);max-width:none;margin:0}
+.hello2 .sub{margin-top:6px;font-size:14px;color:var(--muted)}
+.stats2{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:22px}
+.st{display:flex;gap:14px;align-items:flex-start;background:var(--card);border-radius:14px;padding:18px 18px;box-shadow:0 6px 20px rgba(20,40,75,.07);transition:transform .25s,box-shadow .25s}
+.st:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(20,40,75,.13)}
+.st .lb{display:block;font-size:12px;color:var(--muted)}
+.st b{display:block;font-size:30px;line-height:1.15;margin:2px 0}
+.st small{font-size:11px;color:var(--muted)}
+.ic{flex:none;width:42px;height:42px;border-radius:11px;display:grid;place-items:center}
+.ic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ic.blue{background:#e4eefc;color:#2f6fd6}
+.ic.green{background:#e1f3e6;color:#2e8b57}
+.ic.purple{background:#ece8fb;color:#6a55d6}
+.ic.amberic{background:#fdeed6;color:#b36a00}
+.ic.teal{background:#dcf3ee;color:#1e8a78}
+:root[data-theme="dark"] .ic.blue{background:#1d2f52;color:#8db6ff}
+:root[data-theme="dark"] .ic.green{background:#1b3a2b;color:#7fdca5}
+:root[data-theme="dark"] .ic.purple{background:#2b2750;color:#b4a6ff}
+:root[data-theme="dark"] .ic.amberic{background:#4a3a14;color:#ffc766}
+:root[data-theme="dark"] .ic.teal{background:#17383a;color:#6fdccb}
+.quick2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:16px}
+.qwrap{position:relative}
+.qt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:0;border-radius:14px;padding:18px 20px;box-shadow:0 6px 20px rgba(20,40,75,.07);color:var(--ink);text-decoration:none;transition:transform .25s,box-shadow .25s}
+.qt:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(20,40,75,.13)}
+.qt b{display:block;font-size:14px}
+.qt small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.qmenu{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:5;background:var(--card);border-radius:12px;box-shadow:0 12px 30px rgba(20,40,75,.22);padding:6px;display:grid;gap:2px}
+.qmenu[hidden]{display:none}
+.qmenu a{padding:10px 12px;border-radius:8px;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none}
+.qmenu a:hover{background:var(--badge)}
+.recent{margin-top:16px;background:var(--card);border-radius:14px;box-shadow:0 6px 20px rgba(20,40,75,.07);overflow:hidden}
+.recent header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(20,40,75,.08)}
+.recent h2{display:flex;align-items:center;gap:8px;font-size:14px}
+.recent h2 svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;color:var(--muted)}
+.viewall{border:0;background:#eef1f6;color:var(--ink);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700}
+.viewall:hover{background:var(--badge)}
+:root[data-theme="dark"] .viewall{background:#243556}
+.ri{display:flex;align-items:center;gap:14px;padding:14px 20px;border-top:1px solid rgba(20,40,75,.08)}
+.ri:first-child{border-top:0}
+.ri .box{flex:none;width:36px;height:36px;border-radius:9px;background:#eef1f6;display:grid;place-items:center;color:var(--muted)}
+:root[data-theme="dark"] .ri .box{background:#243556}
+.ri .box svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ri .tx{flex:1;min-width:0}
+.ri .nm{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ri .meta{font-size:11px;color:var(--muted);margin-top:3px}
+.kind{font-size:10px;font-weight:800;letter-spacing:.03em;padding:2px 8px;border-radius:6px}
+.kind.lost{background:#fde0e2;color:#c23038}
+.kind.found{background:#dcf2e3;color:#25784a}
+.pill2{font-size:10px;font-weight:800;letter-spacing:.04em;padding:4px 10px;border-radius:99px}
+.pill2.active{background:#dfeafb;color:#2a63c4}
+.pill2.matched{background:#fdeed6;color:#a35f00}
+.pill2.returned{background:#dcf2e3;color:#25784a}
+.ri .act{display:flex;align-items:center;gap:8px;flex:none}
+.vbtn{display:inline-flex;align-items:center;gap:6px;border:0;background:#eef1f6;color:var(--ink);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;text-decoration:none}
+:root[data-theme="dark"] .vbtn{background:#243556}
+.vbtn:hover{background:var(--badge)}
+.vbtn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.dbtn{width:32px;height:32px;display:grid;place-items:center;border:0;border-radius:8px;background:transparent;color:#d64545}
+.dbtn:hover{background:#fde0e2}
+.dbtn:disabled{opacity:.5}
+.dbtn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.rempty{padding:36px 20px;text-align:center;color:var(--muted);font-size:13px}
+.rempty strong{display:block;color:var(--ink);font-size:14px;margin-bottom:4px}
+/* Campus news + Recent Items side by side */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.duo>.recent{margin-top:0}
+@media(max-width:1100px){.duo{grid-template-columns:1fr}}
+/* Campus news */
+#newsList{max-height:284px;overflow-y:auto;scrollbar-width:thin;overscroll-behavior:contain}   /* exactly 4 news rows are visible, scroll to see the rest */
+.news ul{list-style:none;margin:0;padding:0 20px}
+.news li a{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid rgba(20,40,75,.08);text-decoration:none;color:inherit}
+.news li:last-child a{border-bottom:0}
+.news .nth{flex:none;width:46px;height:46px;border-radius:10px;overflow:hidden;background:#eef2f8;display:grid;place-items:center;font-size:10px;color:var(--muted)}
+.news .nth img{width:100%;height:100%;object-fit:cover}
+.news .tag{flex:none;min-width:72px;text-align:center;margin-right:0}
+.news .tag.found{background:#dbe7ff;color:#1a4a99}.news .tag.returned{background:#d6f3e0;color:#1b6b3a}.news .tag.lost{background:#fde0e2;color:#c23038}
+.news .nt{min-width:0;flex:1}.news .nt b{display:block;font-size:13px;overflow-wrap:anywhere}.news .nt small{display:block;margin-top:2px;font-size:12px;color:var(--muted)}
+:root[data-theme="dark"] .news .tag.lost{background:#5a2121;color:#ffc4c4}:root[data-theme="dark"] .news .tag.found{background:#17335f;color:#b9d2ff}:root[data-theme="dark"] .news .tag.returned{background:#16452c;color:#b6f0cc}
+@media(max-width:600px){.news .tag{min-width:64px}.news .nth{width:40px;height:40px}}
+@media(max-width:980px){
+  .dash{padding:20px}
+  .stats2{grid-template-columns:repeat(2,1fr)}
+  .quick2{grid-template-columns:1fr}
+  .dash{padding:20px}
+  .ri{flex-wrap:wrap}
+  .ri .act{width:100%;justify-content:flex-end}
+}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:60;animation:linkIn .3s both}
+
+
+/* COMMUNITY STRIP */
+.community{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px 48px;margin-top:16px;padding:26px 34px;border-radius:18px;background:#14284b;color:#fff;box-shadow:0 6px 20px rgba(20,40,75,.12)}
+:root[data-theme="dark"] .community{background:linear-gradient(135deg,#2f6fd6,#1b4aa8);box-shadow:0 10px 30px rgba(31,111,235,.25)}
+:root[data-theme="dark"] .cm-head span,:root[data-theme="dark"] .cm-nums span{color:#f0f4ff}
+.cm-head strong{display:block;font-size:19px}
+.cm-head span{display:block;margin-top:4px;font-size:13px;color:#c3cde6}
+.cm-nums{display:flex;flex-wrap:wrap;gap:20px 56px}
+.cm-nums b{display:block;font-size:32px;line-height:1.1}
+.cm-nums span{font-size:13px;color:#c3cde6}
+.notes .tag{flex:none;min-width:74px;text-align:center}
+.panel .match .btn{display:inline-block;text-decoration:none}
+</style>
+<style>.tag.claimed,.tag.pending{background:#fdebc8;color:#7a5200}.photo,.thumb,.ph{background-color:#eef2f8}</style>
+<style id="ll-photo">
+/* photos fill their frame at their own proportions: whole picture, no empty bands */
+.photo{height:auto !important;min-height:0;background:none}
+.photo:not(:has(img)){min-height:96px;background:linear-gradient(135deg,#dbe7ff,#c3d4f7)}
+.photo img,.match .photo img{display:block;width:100%;height:auto !important;max-height:520px;object-fit:contain}
+.item .photo,.match .photo{height:auto !important}
+.thumb img{object-fit:cover !important}
+.rep .fg label.drop:has(img),.drop:has(img){height:auto !important;min-height:124px}
+.drop:has(img)>:not(img):not(input){display:none !important}
+label.drop img,.drop img{position:relative !important;inset:auto !important;width:100%;height:auto !important;max-height:420px;object-fit:contain}
+</style>
+</head>
+<body>
+<header class="nav" id="nav">
+  <a href="#" class="brand">
+    <span class="logo"></span>
+    <span><strong>UCLM LostLink</strong><small>Campus Lost and Found</small></span>
+  </a>
+  <button class="burger" id="burger" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span></button>
+  <nav class="links" id="links">
+    <a href="dashboard.html" class="active"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span>Home</span></a>
+    <a href="search.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Search Items</span></a>
+    <a href="report-lost.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><span>Report Lost</span></a>
+    <a href="report-found.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 11V7.5L12 3 3.5 7.5v9L12 21l3-1.6"/><path d="M3.5 7.5L12 12l8.5-4.5M12 12v4"/><path d="M8 5.2l8.5 4.5"/><circle cx="18" cy="17.5" r="2.6"/><path d="M20 19.5l1.8 1.8"/></svg><span>Report Found</span></a>
+    <a href="my-claims.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4M10 13h6M10 17h6"/></svg><span>My Claims</span></a>
+    <span class="indicator" id="indicator"></span>
+  </nav>
+  <div class="actions">
+    <button class="icon-btn" id="bell" aria-label="Notifications"><svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 0112 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9z"/><path d="M10 20a2 2 0 004 0"/></svg><span class="count" id="bellCount" hidden>0</span></button>
+    <button class="icon-btn" id="settings" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button>
+    <button class="btn ghost logout"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>Log out</button>
+    <span class="avatar" id="avatar">--</span>
+  </div>
+</header>
+
+<main class="dash">
+  <section class="hello2">
+    <div>
+      <h1 id="hello">Hi there</h1>
+      <p class="sub">Here is what is happening with your reports.</p>
+    </div>
+  </section>
+
+  <section class="community" aria-label="Community totals">
+    <div class="cm-head"><strong>Reuniting people with their things</strong><span>Community totals so far</span></div>
+    <div class="cm-nums">
+      <div><b id="cTotal">0</b><span>Items reported</span></div>
+      <div><b id="cReturned">0</b><span>Returned to owners</span></div>
+      <div><b id="cRate">0%</b><span>Recovery rate</span></div>
+    </div>
+  </section>
+
+  <section class="stats2">
+    <div class="st"><span class="ic blue"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg></span><div><span class="lb">Lost Items</span><b id="sLost">0</b><small>Reported by you</small></div></div>
+    <div class="st"><span class="ic green"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/></svg></span><div><span class="lb">Found Items</span><b id="sFound">0</b><small>Reported by you</small></div></div>
+    <div class="st"><span class="ic purple"><svg viewBox="0 0 24 24"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4M10 13h6M10 17h6"/></svg></span><div><span class="lb">My Claims</span><b id="sClaims">0</b><small>Submitted claims</small></div></div>
+    <a class="st" href="notifications.html" style="text-decoration:none;color:inherit"><span class="ic amberic"><svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 0112 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9z"/><path d="M10 20a2 2 0 004 0"/></svg></span><div><span class="lb">Notifications</span><b id="sNotif">0</b><small>Unread</small></div></a>
+  </section>
+
+
+  <section class="panels">
+    <div class="panel">
+      <header><h2>Possible match</h2></header>
+      <div id="matchBox"><div class="empty"><strong>No possible matches yet</strong>When a found item looks like your lost report, it will show up here.</div></div>
+    </div>
+    <div class="panel">
+      <header><h2>Notifications</h2><a href="notifications.html">View all</a></header>
+      <div id="notesBox"><div class="empty"><strong>No notifications yet</strong>Matches and claim updates will appear here.</div></div>
+    </div>
+  </section>
+
+  <div class="duo">
+  <section class="recent news" aria-label="Campus news">
+    <header>
+      <h2><svg viewBox="0 0 24 24"><path d="M4 5h13v14H6a2 2 0 01-2-2z"/><path d="M17 9h3v8a2 2 0 01-2 2M8 9h5M8 13h5"/></svg>Campus news</h2>
+    </header>
+    <div id="newsList"><div class="rempty">Loading…</div></div>
+  </section>
+
+  <section class="recent">
+    <header>
+      <h2><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Recent Items</h2>
+      <button class="viewall" id="viewAll" type="button">View all</button>
+    </header>
+    <div id="recentList"><div class="rempty">Loading…</div></div>
+  </section>
+  </div>
+</main>
+<script src="db.js"></script>
+<script>
+document.documentElement.classList.add('js');
+const nav = document.getElementById('nav');
+const links = [...document.querySelectorAll('.links a')];
+const indicator = document.getElementById('indicator');
+const burger = document.getElementById('burger');
+
+// Sliding pill that follows the active link (same as index)
+function moveTo(el) {
+  indicator.style.width = el.offsetWidth + 'px';
+  indicator.style.height = el.offsetHeight + 'px';
+  indicator.style.transform = `translate(${el.offsetLeft}px, ${el.offsetTop}px)`;
+}
+const current = () => document.querySelector('.links a.active');
+links.forEach(a => {
+  a.addEventListener('click', e => {
+    if (a.getAttribute('href').endsWith('.html') || a.getAttribute('href').includes('.html?')) return;
+    if (a.getAttribute('href') === '#') e.preventDefault();
+    current().classList.remove('active');
+    a.classList.add('active');
+    a.classList.remove('pop'); void a.offsetWidth; a.classList.add('pop');
+    moveTo(a);
+  });
+});
+window.addEventListener('resize', () => moveTo(current()));
+function initPill() {
+  const box = document.getElementById('links');
+  indicator.style.transition = 'none';
+  moveTo(current());
+  void indicator.offsetWidth;
+  indicator.style.transition = '';
+  box.classList.add('ready');
+}
+initPill();
+window.addEventListener('load', initPill);
+if (document.fonts) document.fonts.ready.then(initPill);
+
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 10));
+
+burger.addEventListener('click', () => {
+  const open = burger.classList.toggle('open');
+  burger.setAttribute('aria-expanded', open);
+  document.getElementById('links').classList.toggle('open', open);
+  document.querySelector('.actions').classList.toggle('open', open);
+});
+
+/* ---------- DASHBOARD DATA (live from the database) ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(m){ const t = document.createElement('div'); t.className = 'toast'; t.textContent = m; document.body.appendChild(t); setTimeout(() => t.remove(), 2800); }
+
+const CUBE = '<svg viewBox="0 0 24 24"><path d="M12 3l8.5 4.5v9L12 21l-8.5-4.5v-9z"/><path d="M3.5 7.5L12 12l8.5-4.5M12 12v9"/></svg>';
+const EYE  = '<svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const TRASH= '<svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
+const STATUS = { available: ['ACTIVE', 'active'], matched: ['MATCHED', 'matched'], claimed: ['CLAIMED', 'matched'], pending: ['PENDING', 'matched'], returned: ['RETURNED', 'returned'] };
+
+let mine = [], expanded = false;
+
+function drawStats(){ /* numbers are set when the data arrives */ }
+function drawRecent() {
+  const list = expanded ? mine : mine.slice(0, 5), box = $('recentList');
+  $('viewAll').hidden = mine.length <= 5;
+  $('viewAll').textContent = expanded ? 'Show fewer' : 'View all';
+  box.innerHTML = list.length ? list.map(it => {
+    const [t, c] = STATUS[it.status] || [String(it.status || '').toUpperCase(), 'active'];
+    const meta = [it.category, it.area, it.date || (it.createdAt || '').slice(0, 10)].filter(Boolean).join(' • ');
+    return `<div class="ri">
+      <span class="box">${CUBE}</span>
+      <div class="tx"><div class="nm">${esc(it.name)} <span class="kind ${esc(it.type)}">${esc(it.type.toUpperCase())}</span></div><div class="meta">${esc(meta)}</div></div>
+      <div class="act">
+        <span class="pill2 ${c}">${esc(t)}</span>
+        <a class="vbtn" href="item.html?id=${encodeURIComponent(it.id)}">${EYE}View</a>
+        ${it.status === 'returned' ? '' : `<button class="dbtn" type="button" data-del="${esc(it.id)}" title="Delete this report" aria-label="Delete ${esc(it.name)}">${TRASH}</button>`}
+      </div></div>`;
+  }).join('') : `<div class="rempty"><strong>No reports yet</strong>Use “Report Item” to add a lost or found item.</div>`;
+}
+$('viewAll').addEventListener('click', () => { expanded = !expanded; drawRecent(); });
+$('recentList').addEventListener('click', async e => {
+  const b = e.target.closest('[data-del]'); if (!b) return;
+  if (!confirm('Delete this report? This cannot be undone.')) return;
+  b.disabled = true;
+  try { await LostLinkDB.remove(b.dataset.del); toast('Report deleted.'); await loadItems(); }
+  catch (x) { b.disabled = false; toast(x.message || 'Could not delete the report.'); }
+});
+
+function hello() {
+  const p = (typeof LostLinkUI !== 'undefined') ? LostLinkUI.settings().profile : {};
+  const first = (p.name || '').split(' ')[0];
+  $('hello').textContent = first ? `Hi, ${first}` : 'Hi there';
+}
+hello();
+document.addEventListener('lostlink:ready', hello);
+
+async function drawMatch() {
+  const it = mine.find(i => i.status === 'matched'), box = $('matchBox');
+  let pm = []; try { pm = await llApi('api/possible_matches.php'); } catch {}       // found items that look like my lost reports
+  if (!it && !pm.length) return;
+  let html = '';
+  if (it) {
+    const where = [it.area ? 'Found near ' + it.area : '', it.date || (it.createdAt || '').slice(0, 10)].filter(Boolean).join(' \u00b7 ');
+    const photo = it.photo || it.image || it.imageUrl;
+    html += `<div class="match">
+    <div class="photo">${photo ? `<img src="${esc(photo)}" alt="">` : 'Item photo'}</div>
+    <div><span class="tag">Matched</span><strong>${esc(it.name)}</strong>
+    <p>${esc(where)}${where ? '. ' : ''}Review it and submit a claim with proof.</p>
+    <a class="btn amber small" href="item.html?id=${encodeURIComponent(it.id)}">View item and claim</a></div></div>`;
+  }
+  html += pm.slice(0, it ? 2 : 3).map(m => `<div class="match" style="margin-top:14px">
+    <div class="photo">${m.photo ? `<img src="${esc(m.photo)}" alt="">` : 'Item photo'}</div>
+    <div><span class="tag">${esc(m.level)} match</span><strong>${esc(m.name)}</strong>
+    <p>Found near ${esc(m.area)} area, reported ${esc(LostLinkUI.timeAgo(m.createdAt))}. It looks like your lost report \u201c${esc(m.lostName)}\u201d.</p>
+    <a class="btn amber small" href="item.html?id=${encodeURIComponent(m.foundId)}">View item</a></div></div>`).join('');
+  box.innerHTML = html;
+}
+async function loadNotes() {
+  const list = await LostLinkDB.notifications();
+  if (!Array.isArray(list) || !list.length) return;
+  const label = t => { t = String(t || '').toLowerCase();
+    if (t.includes('approv')) return ['Approved', 'approved'];
+    if (t.includes('reject')) return ['Rejected', 'rejected'];
+    if (t.includes('match')) return ['Match', ''];
+    return [t ? t.charAt(0).toUpperCase() + t.slice(1) : 'Update', '']; };
+  $('notesBox').innerHTML = '<ul class="notes">' + list.slice(0, 3).map(n => {
+    const [t, c] = label(n.type || n.kind || n.status);
+    const when = n.at || n.createdAt || n.created_at || n.time;
+    const sub = [n.body || n.detail || n.sub || n.meta, when ? LostLinkUI.timeAgo(when) : ''].filter(Boolean).join(' \u00b7 ');
+    return `<li><span class="tag ${c}">${esc(t)}</span><div><b>${esc(n.title || n.message || n.text || '')}</b><small>${esc(sub)}</small></div></li>`;
+  }).join('') + '</ul>';
+}
+
+/* Campus news: items that were found or returned lately (public details only: no names, no exact places) */
+let newsList = [];
+function drawNews() {
+  const box = $('newsList'), list = newsList;                 // all of them: the box shows 4 rows and scrolls
+  if (!list.length) { box.innerHTML = '<div class="rempty"><strong>No news yet</strong>When items are lost, found or returned to their owners, you will see it here.</div>'; return; }
+  box.innerHTML = '<ul>' + list.map(n => {
+    const ret = n.kind === 'returned', lost = n.kind === 'lost', sub = [n.category, n.area ? n.area + ' area' : '', LostLinkUI.timeAgo(n.at)].filter(Boolean).join(' \u00b7 ');
+    return `<li><a href="item.html?id=${encodeURIComponent(n.itemId)}"><span class="nth">${n.photo ? `<img src="${esc(n.photo)}" alt="">` : 'No photo'}</span>
+      <span class="tag ${esc(n.kind)}">${ret ? 'Returned' : lost ? 'Lost' : 'Found'}</span>
+      <span class="nt"><b>${esc(n.name)} ${ret ? 'was returned to its owner' : lost ? 'was reported lost' : 'was found'}</b><small>${esc(sub)}</small></span></a></li>`;
+  }).join('') + '</ul>';
+}
+async function loadNews() {
+  try { newsList = await llApi('api/news.php'); if (!Array.isArray(newsList)) newsList = []; }
+  catch { $('newsList').innerHTML = '<div class="rempty"><strong>News is not available right now</strong>Please try again later.</div>'; return; }
+  drawNews();
+}
+
+async function loadItems() {
+  const items = await LostLinkDB.list();
+  mine = items.filter(i => i.mine);
+  $('sLost').textContent = mine.filter(i => i.type === 'lost').length;
+  $('sFound').textContent = mine.filter(i => i.type === 'found').length;
+  const returned = items.filter(i => i.status === 'returned').length;
+  $('cTotal').textContent = items.length;
+  $('cReturned').textContent = returned;
+  $('cRate').textContent = (items.length ? Math.round(returned / items.length * 100) : 0) + '%';
+  drawMatch();
+  drawRecent();
+}
+if (typeof LostLinkDB !== 'undefined') {
+  loadItems().catch(e => { $('recentList').innerHTML = `<div class="rempty"><strong>Could not load your items</strong>${esc(e.message || '')}</div>`; });
+  LostLinkDB.claims().then(cl => { $('sClaims').textContent = cl.length; }).catch(() => {});
+  LostLinkDB.unreadCount().then(n => { $('sNotif').textContent = n; }).catch(() => {});
+  LostLinkUI.initBell();
+  loadNotes().catch(() => {});
+  loadNews().catch(() => {});
+} else {
+  $('recentList').innerHTML = '<div class="rempty"><strong>db.js is missing</strong>Put db.js in the same folder as this page.</div>';
+}
+</script>
+</body>
+</html>

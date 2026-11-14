@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Log In – UCLM LostLink</title>
+<style>
+:root{--bg:#e9f1ef;--ink:#14284b;--muted:#3f4d66;--card:#fff;--amber:#f5a623;--field:#f3f6fa;--line:#d5deea;--nav:#ffffffee}
+*{box-sizing:border-box;margin:0}
+body{font-family:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+button,input{font:inherit}
+button{cursor:pointer;color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+
+/* NAV (same as home page) */
+.nav{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:16px;padding:10px 28px;background:var(--nav);backdrop-filter:blur(8px);box-shadow:0 1px 0 rgba(20,40,75,.08)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);line-height:1.15}
+.brand strong{font-size:20px}
+.brand small{display:block;font-size:14px;color:var(--muted)}
+.logo{width:50px;height:50px;border-radius:10px;background:#fff url(logo.png) center/82% no-repeat;box-shadow:inset 0 0 0 1.5px #d5deea}
+.actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.btn{border-radius:10px;padding:10px 22px;font-size:15px;font-weight:700;border:1.5px solid var(--ink);text-decoration:none;display:inline-block;transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(20,40,75,.2)}
+.ghost{background:transparent;color:var(--ink)}
+.amber{background:var(--amber);border-color:var(--amber);color:var(--ink)}
+.solid{background:var(--ink);border-color:var(--ink);color:#fff}
+.ghost.active{background:#dbe8fb;border-color:#2f6fd6}
+
+.pwwrap{position:relative}
+.pwwrap input[type=password],.pwwrap input[type=text]{padding-right:46px}
+.eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;background:transparent;border-radius:8px;display:grid;place-items:center;color:var(--muted);cursor:pointer}
+.eye:hover{color:var(--ink);background:rgba(20,40,75,.08)}
+.eye svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+/* LAYOUT */
+.wrap{display:grid;grid-template-columns:1fr 1.15fr;gap:28px;max-width:1100px;margin:0 auto;padding:36px 28px}
+
+/* LEFT PANEL */
+.panel{position:relative;overflow:hidden;background:var(--ink);color:#fff;border-radius:18px;padding:28px 28px 24px}
+.panel::after{content:"";position:absolute;right:-70px;bottom:-70px;width:260px;height:260px;border-radius:50%;background:rgba(80,130,220,.25)}
+.panel>*{position:relative;z-index:1}
+.panel-brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:17px}
+.panel-logo{width:40px;height:40px;border-radius:10px;background:#fff url(logo.png) center/82% no-repeat}
+.badge{display:inline-block;margin-top:22px;padding:5px 12px;border-radius:99px;background:var(--amber);color:var(--ink);font-size:10px;font-weight:800;letter-spacing:.06em}
+.panel h1{font-size:clamp(28px,3.4vw,36px);line-height:1.15;letter-spacing:-.01em;margin-top:10px}
+.panel>p.lead{font-size:13px;line-height:1.6;color:#cdd7ea;margin-top:14px}
+.steps{list-style:none;padding:0;margin-top:20px;display:grid;gap:14px}
+.steps li{display:flex;gap:12px;align-items:flex-start}
+.num{flex:none;width:24px;height:24px;border-radius:50%;background:var(--amber);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;line-height:1}
+.steps b{display:block;font-size:13px}
+.steps div>span{display:block;font-size:12px;line-height:1.45;color:#cdd7ea;margin-top:2px}
+
+/* FORM CARD */
+.card{background:var(--card);border-radius:18px;padding:30px 36px;box-shadow:0 8px 30px rgba(20,40,75,.1);align-self:stretch;display:flex;flex-direction:column;justify-content:center}
+.card h2{font-size:28px;letter-spacing:-.01em}
+.card .sub{font-size:12px;color:var(--muted);margin-top:8px}
+form{display:grid;gap:14px;margin-top:20px}
+label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}
+input[type=text],input[type=password]{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--field);color:var(--ink);font-size:13px;transition:border-color .2s,box-shadow .2s}
+input::placeholder{color:#8b97ab}
+input[type=text]:focus,input[type=password]:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px rgba(245,166,35,.3)}
+input.bad{border-color:#d64545}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px}
+.remember{display:flex;align-items:center;gap:8px;margin:0;font-weight:500;cursor:pointer}
+.remember input{appearance:none;-webkit-appearance:none;width:16px;height:16px;margin:0;border-radius:4px;background:var(--ink);display:grid;place-items:center;cursor:pointer}
+.remember input:checked::after{content:"";width:8px;height:4px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
+.remember input:not(:checked){background:#fff;border:1.5px solid var(--ink)}
+.row a{color:var(--ink);font-weight:800;text-decoration:none}
+.row a:hover,.have a:hover{text-decoration:underline}
+.submit{width:100%;padding:14px;border-radius:10px;border:0;background:var(--amber);color:var(--ink);font-size:14px;font-weight:800;transition:transform .2s,box-shadow .2s}
+.submit:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(245,166,35,.45)}
+.msg{min-height:18px;font-size:12px;font-weight:600;text-align:center}
+.msg.err{color:#d64545}
+.msg.ok{color:#1c7c4d}
+.have{text-align:center;font-size:12px;color:var(--muted)}
+.have a{color:var(--ink);font-weight:800;text-decoration:none}
+
+@media(max-width:860px){
+  .nav{padding:10px 20px}
+  .brand small{display:none}
+  .btn{padding:9px 16px;font-size:13px}
+  .wrap{grid-template-columns:1fr;padding:24px 20px}
+  .card{padding:26px 22px}
+}
+</style>
+</head>
+<body>
+<header class="nav">
+  <a href="index.html" class="brand">
+    <span class="logo"></span>
+    <span><strong>UCLM LostLink</strong><small>Campus Lost and Found</small></span>
+  </a>
+  <div class="actions">
+    <a href="login.html" class="btn ghost">Login</a>
+    <a href="signup.html" class="btn amber">Sign up</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="panel">
+    <div class="panel-brand"><span class="panel-logo"></span>UCLM LostLink</div>
+    <span class="badge">ABOUT LOSTLINK</span>
+    <h1>What is LostLink?</h1>
+    <p class="lead">The UCLM campus lost and found system that links lost reports to found items.</p>
+    <ul class="steps">
+      <li><span class="num">1</span><div><b>Zone-based location matching</b><span>Items found in your campus zone are ranked first.</span></div></li>
+      <li><span class="num">2</span><div><b>Smart match scoring</b><span>Name, category, location and date build a match score.</span></div></li>
+      <li><span class="num">3</span><div><b>Admin-reviewed returns</b><span>Every claim is checked against your proof of ownership.</span></div></li>
+      <li><span class="num">4</span><div><b>Instant match alerts</b><span>Get a bell and email alert when a likely match is found.</span></div></li>
+      <li><span class="num">5</span><div><b>Private by design</b><span>Sensitive item details stay hidden until you are verified.</span></div></li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>Login</h2>
+    <p class="sub">Welcome back to your campus account.</p>
+    <form id="login" novalidate>
+      <div><label for="user">ID Number / Email</label><input id="user" type="text" placeholder="uclm-idNumber or you@gmail.com" autocomplete="username"></div>
+      <div><label for="pw">Password</label><div class="pwwrap"><input id="pw" type="password" placeholder="Enter your password" autocomplete="current-password"><button type="button" class="eye" id="eye" aria-label="Show password" aria-pressed="false" title="Show password"></button></div></div>
+      <div class="row">
+        <label class="remember"><input type="checkbox" id="rem"> Remember me</label>
+        <a href="forgot-password.html">Forgot password?</a>
+      </div>
+      <p class="msg" id="msg" aria-live="polite"></p>
+      <button class="submit" type="submit">Log in</button>
+      <p class="have">New here? <a href="signup.html">Sign up</a></p>
+    </form>
+  </section>
+</main>
+
+<script>
+/* ---- talk to the PHP backend ---- */
+async function api(url,body){
+  let r;try{r=await fetch(url,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-Requested-With':'XMLHttpRequest'},body:JSON.stringify(body||{})})}
+  catch{throw new Error('Cannot reach the server. Please check your connection and try again.')}
+  let d=null;try{d=await r.json()}catch{}
+  if(!r.ok)throw new Error((d&&d.error)||'Server error. Please try again.');
+  return d;
+}
+function saveSession(d){
+  const u=d.user,s=d.settings;
+  localStorage.setItem('lostlink_settings',JSON.stringify({theme:s.theme,notif:s.notif,privacy:s.privacy,profile:{name:u.name,idNumber:u.idNumber,email:u.email,role:u.role,program:u.program,yearLevel:u.yearLevel,section:u.section,since:u.since,photo:u.photo}}));
+  localStorage.setItem('lostlink_auth','1');
+}
+/* Admins land on the admin dashboard, everyone else on the student dashboard (api/admin.php answers 200 only for admins). */
+async function home(){
+  try{const r=await fetch('api/admin.php',{credentials:'same-origin',headers:{'X-Requested-With':'XMLHttpRequest'}});localStorage.setItem('lostlink_admin',r.ok?'1':'0');return r.ok?'admin-dashboard.html':'dashboard.html'}
+  catch{return 'dashboard.html'}
+}
+// Already signed in? Skip the form.
+fetch('api/auth.php?action=me',{credentials:'same-origin'}).then(r=>r.ok?r.json():null).then(async d=>{if(d&&d.user){saveSession(d);location.replace(await home())}}).catch(()=>{});
+const f=document.getElementById('login'),msg=document.getElementById('msg');
+const u=document.getElementById('user'),p=document.getElementById('pw');
+
+/* show / hide password */
+const EYE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10.8 10.8 0 0112 5c6.4 0 10 7 10 7a17 17 0 01-3.2 4M6.5 6.6C3.7 8.3 2 12 2 12s3.6 7 10 7c1.6 0 3-.4 4.2-1M9.9 9.9a3 3 0 004.2 4.2"/></svg>';
+const eye=document.getElementById('eye');
+eye.innerHTML=EYE;
+eye.addEventListener('click',()=>{
+  const show=p.type==='password';
+  p.type=show?'text':'password';
+  eye.innerHTML=show?EYE_OFF:EYE;
+  eye.setAttribute('aria-label',show?'Hide password':'Show password');
+  eye.setAttribute('title',show?'Hide password':'Show password');
+  eye.setAttribute('aria-pressed',String(show));
+  p.focus();
+});
+function show(t,ok){msg.textContent=t;msg.className='msg '+(ok?'ok':'err')}
+f.addEventListener('submit',e=>{
+  e.preventDefault();
+  u.classList.remove('bad');p.classList.remove('bad');
+  if(!u.value.trim()){u.classList.add('bad');u.focus();return show('Enter your ID number or email.')}
+  if(!p.value){p.classList.add('bad');p.focus();return show('Enter your password.')}
+  const btn=f.querySelector('.submit');btn.disabled=true;
+  api('api/auth.php?action=login',{login:u.value.trim(),password:p.value,remember:document.getElementById('rem').checked})
+    .then(async d=>{saveSession(d);show('Logged in! Redirecting…',true);location.href=await home()})
+    .catch(x=>{p.classList.add('bad');show(x.message)})
+    .finally(()=>{btn.disabled=false});
+});
+</script>
+</body>
+</html>

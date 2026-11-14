@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign Up – UCLM LostLink</title>
+<style>
+:root{--bg:#e9f1ef;--ink:#14284b;--muted:#3f4d66;--card:#fff;--amber:#f5a623;--field:#f3f6fa;--line:#d5deea;--nav:#ffffffee}
+*{box-sizing:border-box;margin:0}
+body{font-family:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+button,input{font:inherit}
+button{cursor:pointer;color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+
+/* NAV (same as home page) */
+.nav{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:16px;padding:10px 28px;background:var(--nav);backdrop-filter:blur(8px);box-shadow:0 1px 0 rgba(20,40,75,.08)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);line-height:1.15}
+.brand strong{font-size:20px}
+.brand small{display:block;font-size:14px;color:var(--muted)}
+.logo{width:50px;height:50px;border-radius:10px;background:#fff url(logo.png) center/82% no-repeat;box-shadow:inset 0 0 0 1.5px #d5deea}
+.actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.btn{border-radius:10px;padding:10px 22px;font-size:15px;font-weight:700;border:1.5px solid var(--ink);text-decoration:none;display:inline-block;transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(20,40,75,.2)}
+.ghost{background:transparent;color:var(--ink)}
+.amber{background:var(--amber);border-color:var(--amber);color:var(--ink)}
+
+.pwwrap{position:relative}
+.pwwrap input[type=password],.pwwrap input[type=text]{padding-right:46px}
+.eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:0;background:transparent;border-radius:8px;display:grid;place-items:center;color:var(--muted);cursor:pointer}
+.eye:hover{color:var(--ink);background:rgba(20,40,75,.08)}
+.eye svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+/* LAYOUT */
+.wrap{display:grid;grid-template-columns:1fr 1.15fr;gap:28px;max-width:1100px;margin:0 auto;padding:36px 28px}
+
+/* LEFT PANEL */
+.panel{position:relative;overflow:hidden;background:var(--ink);color:#fff;border-radius:18px;padding:28px 28px 24px}
+.panel::after{content:"";position:absolute;right:-70px;bottom:-70px;width:260px;height:260px;border-radius:50%;background:rgba(80,130,220,.25)}
+.panel>*{position:relative;z-index:1}
+.panel-brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:17px}
+.panel-logo{width:40px;height:40px;border-radius:10px;background:#fff url(logo.png) center/82% no-repeat}
+.badge{display:inline-block;margin-top:22px;padding:5px 12px;border-radius:99px;background:var(--amber);color:var(--ink);font-size:10px;font-weight:800;letter-spacing:.06em}
+.panel h1{font-size:clamp(28px,3.4vw,36px);line-height:1.15;letter-spacing:-.01em;margin-top:10px}
+.panel>p.lead{font-size:13px;line-height:1.6;color:#cdd7ea;margin-top:14px}
+.steps{list-style:none;padding:0;margin-top:20px;display:grid;gap:14px}
+.steps li{display:flex;gap:12px;align-items:flex-start}
+.num{flex:none;width:24px;height:24px;border-radius:50%;background:var(--amber);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;line-height:1}
+.steps b{display:block;font-size:13px}
+.steps div>span{display:block;font-size:12px;line-height:1.45;color:#cdd7ea;margin-top:2px}
+
+.panel h1{margin-top:28px}
+.panel>.note{margin-top:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,.15);font-size:12px;line-height:1.45;color:#cdd7ea}
+
+/* FORM CARD */
+.card{background:var(--card);border-radius:18px;padding:30px 36px;box-shadow:0 8px 30px rgba(20,40,75,.1);align-self:start}
+.card h2{font-size:28px;letter-spacing:-.01em}
+.card .sub{font-size:12px;color:var(--muted);margin-top:8px}
+form{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;margin-top:20px}
+.full{grid-column:1/-1}
+label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}
+input{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--field);color:var(--ink);font-size:13px;transition:border-color .2s,box-shadow .2s}
+select{width:100%;padding:12px 38px 12px 14px;border:1.5px solid var(--line);border-radius:10px;background:var(--field) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2314284b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center/16px;color:var(--ink);font-size:13px;appearance:none;-webkit-appearance:none;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+select:invalid{color:#8b97ab}
+select option{color:var(--ink)}
+select:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px rgba(245,166,35,.3)}
+select.bad{border-color:#d64545}
+input::placeholder{color:#8b97ab}
+input:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px rgba(245,166,35,.3)}
+input.bad{border-color:#d64545}
+.submit{width:100%;padding:14px;border-radius:10px;border:0;background:var(--amber);color:var(--ink);font-size:14px;font-weight:800;transition:transform .2s,box-shadow .2s}
+.submit:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(245,166,35,.45)}
+.msg{min-height:18px;font-size:12px;font-weight:600;text-align:center}
+.msg.err{color:#d64545}
+.msg.ok{color:#1c7c4d}
+.have{text-align:center;font-size:12px;color:var(--muted)}
+.have a{color:var(--ink);font-weight:800;text-decoration:none}
+.have a:hover{text-decoration:underline}
+
+@media(max-width:860px){
+  .nav{padding:10px 20px}
+  .brand small{display:none}
+  .btn{padding:9px 16px;font-size:13px}
+  .wrap{grid-template-columns:1fr;padding:24px 20px}
+  .card{padding:26px 22px}
+  form{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header class="nav">
+  <a href="index.html" class="brand">
+    <span class="logo"></span>
+    <span><strong>UCLM LostLink</strong><small>Campus Lost and Found</small></span>
+  </a>
+  <div class="actions">
+    <a href="login.html" class="btn ghost">Login</a>
+    <a href="signup.html" class="btn amber">Sign up</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="panel">
+    <div class="panel-brand"><span class="panel-logo"></span>UCLM LostLink</div>
+    <h1>Lost it on campus? Let’s link it back to you.</h1>
+    <p class="lead">Create a free campus account to search, report and claim items safely.</p>
+    <ul class="steps">
+      <li><span class="num">1</span><div><b>Create your account</b></div></li>
+      <li><span class="num">2</span><div><b>Report lost or found items</b></div></li>
+      <li><span class="num">3</span><div><b>Get matched automatically</b></div></li>
+      <li><span class="num">4</span><div><b>Claim and reunite!</b></div></li>
+    </ul>
+    <p class="note">Private details stay hidden until an admin verifies your claim.</p>
+  </section>
+
+  <section class="card">
+    <h2>Sign Up</h2>
+    <p class="sub">Create your campus account.</p>
+    <form id="signup" novalidate>
+      <div><label for="name">Full name</label><input id="name" type="text" placeholder="Juan Dela Cruz" autocomplete="name" required></div>
+      <div><label for="sid">ID Number</label><input id="sid" type="text" placeholder="uclm-idNumber" required></div>
+      <div class="full"><label for="role">Role</label><select id="role" required><option value="" disabled selected>Select your role</option><option>Student</option><option>Employee</option><option>Faculty</option><option>Parent / Guardian</option><option>Alumni</option><option>Visitor</option><option>Other</option></select></div>
+      <div class="full"><label for="email">Email</label><input id="email" type="email" placeholder="you@gmail.com" autocomplete="email" required></div>
+      <div><label for="pw">Password</label><div class="pwwrap"><input id="pw" type="password" placeholder="Create a password" autocomplete="new-password" minlength="8" required><button type="button" class="eye" data-eye="pw" aria-label="Show password" aria-pressed="false" title="Show password"></button></div></div>
+      <div><label for="pw2">Confirm Password</label><div class="pwwrap"><input id="pw2" type="password" placeholder="Repeat password" autocomplete="new-password" required><button type="button" class="eye" data-eye="pw2" aria-label="Show password" aria-pressed="false" title="Show password"></button></div></div>
+      <p class="msg full" id="msg" aria-live="polite"></p>
+      <button class="submit full" type="submit">Sign Up</button>
+      <p class="have full">Already have an account? <a href="login.html">Log in</a></p>
+    </form>
+  </section>
+</main>
+
+<script>
+/* ---- talk to the PHP backend ---- */
+async function api(url,body){
+  let r;try{r=await fetch(url,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-Requested-With':'XMLHttpRequest'},body:JSON.stringify(body||{})})}
+  catch{throw new Error('Cannot reach the server. Please check your connection and try again.')}
+  let d=null;try{d=await r.json()}catch{}
+  if(!r.ok)throw new Error((d&&d.error)||'Server error. Please try again.');
+  return d;
+}
+function saveSession(d){
+  const u=d.user,s=d.settings;
+  localStorage.setItem('lostlink_settings',JSON.stringify({theme:s.theme,notif:s.notif,privacy:s.privacy,profile:{name:u.name,idNumber:u.idNumber,email:u.email,role:u.role,program:u.program,yearLevel:u.yearLevel,section:u.section,since:u.since,photo:u.photo}}));
+  localStorage.setItem('lostlink_auth','1');
+  localStorage.setItem('lostlink_admin',d.user.isAdmin?'1':'0');
+}
+const EYE='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10.8 10.8 0 0112 5c6.4 0 10 7 10 7a17 17 0 01-3.2 4M6.5 6.6C3.7 8.3 2 12 2 12s3.6 7 10 7c1.6 0 3-.4 4.2-1M9.9 9.9a3 3 0 004.2 4.2"/></svg>';
+document.querySelectorAll('.eye').forEach(b=>{
+  b.innerHTML=EYE;
+  b.addEventListener('click',()=>{
+    const i=document.getElementById(b.dataset.eye),show=i.type==='password';
+    i.type=show?'text':'password';
+    b.innerHTML=show?EYE_OFF:EYE;
+    b.setAttribute('aria-label',show?'Hide password':'Show password');
+    b.setAttribute('title',show?'Hide password':'Show password');
+    b.setAttribute('aria-pressed',String(show));
+    i.focus();
+  });
+});
+const f=document.getElementById('signup'),msg=document.getElementById('msg');
+const ids=['name','sid','role','email','pw','pw2'].map(i=>document.getElementById(i));
+function show(t,ok){msg.textContent=t;msg.className='msg full '+(ok?'ok':'err')}
+f.addEventListener('submit',e=>{
+  e.preventDefault();
+  ids.forEach(i=>i.classList.remove('bad'));
+  const empty=ids.find(i=>!i.value.trim());
+  if(empty){empty.classList.add('bad');empty.focus();return show(empty.id==='role'?'Please select your role.':'Please fill in every field.')}
+  if(!/^\S+@\S+\.\S+$/.test(ids[3].value)){ids[3].classList.add('bad');ids[3].focus();return show('Enter a valid email address.')}
+  if(ids[4].value.length<8){ids[4].classList.add('bad');ids[4].focus();return show('Password must be at least 8 characters.')}
+  if(ids[4].value!==ids[5].value){ids[5].classList.add('bad');ids[5].focus();return show('Passwords do not match.')}
+  const btn=f.querySelector('.submit');btn.disabled=true;
+  api('api/auth.php?action=signup',{name:ids[0].value.trim(),idNumber:ids[1].value.trim(),role:ids[2].value,email:ids[3].value.trim(),password:ids[4].value})
+    .then(d=>{saveSession(d);show('Account created! Taking you to your dashboard…',true);setTimeout(()=>location.href=d.user.isAdmin?'admin-dashboard.html':'dashboard.html',700)})
+    .catch(x=>show(x.message))
+    .finally(()=>{btn.disabled=false});
+});
+</script>
+</body>
+</html>

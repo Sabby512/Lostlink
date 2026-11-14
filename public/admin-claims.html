@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manage Claims – UCLM LostLink</title>
+<script>(function(){try{var s=JSON.parse(localStorage.getItem('lostlink_settings'))||{},t=s.theme||'light';if(t==='device')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t)}catch(e){}})()</script>
+<style>
+:root{--bg:#eef3f2;--side:#14284b;--ink:#14284b;--muted:#5b6882;--card:#fff;--line:#e3e9f0;--amber:#f5a623;--soft:#dce8fb;--field:#f1f4f8;--green:#1c7c4d;--shadow:0 6px 20px rgba(20,40,75,.07)}
+:root[data-theme="dark"]{--bg:#0e1626;--side:#0a1220;--ink:#e8eefb;--muted:#9aa8c4;--card:#172238;--line:#26334d;--soft:#243556;--field:#1d2a44;--green:#6fd3a0;--shadow:0 6px 20px rgba(0,0,0,.35)}
+*{box-sizing:border-box;margin:0}
+html,body{height:auto;min-height:100%;width:100%}
+html{overflow-x:hidden}   /* NOT on body: overflow on body makes it a scroll container and breaks the sticky sidebar */
+body{font-family:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.app{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100vh;min-height:100dvh;width:100%;background:linear-gradient(to right,var(--side) 236px,var(--bg) 236px)}  /* navy column always runs the full page height */
+
+/* SIDEBAR */
+.side{background:var(--side);color:#fff;padding:22px 12px;position:sticky;top:0;align-self:start;height:100vh;height:100dvh;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.brand{display:flex;align-items:center;gap:10px;padding:0 10px 18px;text-decoration:none;color:#fff;line-height:1.15}
+.brand i{flex:none;width:50px;height:50px;border-radius:10px;background:#fff url(logo.png) center/82% no-repeat;box-shadow:inset 0 0 0 1.5px #d5deea;display:block}
+.brand b{display:block;font-size:17px;font-weight:800}
+.brand small{display:block;font-size:11px;font-weight:500;color:#9fb0cf;white-space:nowrap}
+.cap{font-size:10px;letter-spacing:.1em;color:#9fb0cf;padding:0 10px 6px}
+.side nav{display:grid;gap:4px}
+.side nav a{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 12px;border-radius:9px;color:#dfe7f6;text-decoration:none;font-size:13px;font-weight:600}
+.side nav a:hover{background:rgba(255,255,255,.08)}
+.side nav a.on{background:#fff;color:#14284b}
+.badge:empty{display:none}
+.badge{min-width:24px;padding:2px 8px;border-radius:99px;background:var(--amber);color:#14284b;font-size:11px;font-weight:800;text-align:center}
+
+/* MAIN */
+.main{min-width:0;min-height:100vh;min-height:100dvh;background:var(--bg)}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:14px 22px;background:var(--card);box-shadow:0 1px 0 var(--line)}
+.menu{display:none;border:1.5px solid var(--ink);background:transparent;border-radius:9px;padding:7px 10px;font-weight:800}
+.search{flex:1;max-width:520px}
+.search input{width:100%;padding:11px 16px;border:1.5px solid transparent;border-radius:10px;background:var(--field);font-size:13px}
+.search input::placeholder{color:var(--muted)}
+.search input:focus{outline:none;border-color:var(--amber)}
+.right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.ib{position:relative;width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);display:grid;place-items:center}
+.ib svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ib .dot{position:absolute;top:-4px;right:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:99px;background:#e5484d;color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center}
+.pill{border:1.5px solid var(--ink);background:transparent;border-radius:99px;padding:8px 16px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px}
+.pill svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.av{width:38px;height:38px;border-radius:50%;background:var(--soft);color:#2a4a9a;font-weight:800;font-size:12px;display:grid;place-items:center}
+:root[data-theme="dark"] .av{color:var(--ink)}
+.content{padding:24px 28px 40px;width:100%;max-width:none}
+.head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px}
+.head h1{font-size:28px;letter-spacing:-.01em}
+.head p{font-size:13px;color:var(--muted);margin-top:4px}
+.btn{border:0;border-radius:10px;padding:11px 20px;font-weight:800;font-size:13px;background:var(--amber);color:#14284b}
+.btn:hover{filter:brightness(1.05)}
+
+/* CARDS */
+.card{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat small{font-size:12px;color:var(--muted)}
+.stat b{display:block;font-size:30px;margin:6px 0 4px;line-height:1.1}
+.stat span{font-size:11px;color:var(--green);font-weight:600}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+.q{display:flex;align-items:center;gap:12px;text-decoration:none;padding:14px 16px}
+.q:hover{transform:translateY(-2px);transition:transform .2s}
+.q i{flex:none;width:42px;height:42px;border-radius:10px;background:var(--soft);display:grid;place-items:center;color:#2a4a9a}
+:root[data-theme="dark"] .q i{color:var(--ink)}
+.q i svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.q b{display:block;font-size:13px}.q span{font-size:11px;color:var(--muted)}
+.lower{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;margin-top:14px}
+.card h2{font-size:15px;margin-bottom:12px}
+
+/* MATCH TABLE */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:480px}
+th{text-align:left;font-weight:500;color:var(--muted);padding:8px 6px;border-bottom:1px solid var(--line)}
+td{padding:13px 6px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+.sc{display:flex;align-items:center;gap:8px;font-weight:800}
+.bar{width:64px;height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar u{display:block;height:100%;background:var(--amber)}
+.lv{display:inline-block;padding:3px 12px;border-radius:99px;font-size:11px;font-weight:700}
+.lv.High{background:#d6f3e0;color:#1b6b3a}.lv.Medium{background:#fde7c0;color:#8a5a00}.lv.Low{background:#e5eaf2;color:#3f4d66}
+:root[data-theme="dark"] .lv.High{background:#16452c;color:#b6f0cc}
+:root[data-theme="dark"] .lv.Medium{background:#4a3913;color:#ffd98a}
+:root[data-theme="dark"] .lv.Low{background:#26334d;color:#cbd6ee}
+.empty{padding:26px 10px;text-align:center;color:var(--muted);font-size:12px;line-height:1.5}
+.empty strong{display:block;color:var(--ink);font-size:13px;margin-bottom:4px}
+
+/* CHART */
+.chart{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:end;height:190px}
+.col{display:flex;flex-direction:column;justify-content:flex-end;height:100%;font-size:11px;color:var(--muted)}
+.col .b{background:var(--ink);border-radius:6px 6px 0 0;min-height:6px;transition:height .5s ease}
+:root[data-theme="dark"] .col .b{background:#5b86e0}
+.col span{margin-top:8px}.col em{font-style:normal;font-weight:700;color:var(--ink);display:block}
+
+.note{display:none;margin-bottom:14px;padding:12px 14px;border-radius:10px;background:#fde7c0;color:#6b4500;font-size:13px}
+.note.show{display:block}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--card);padding:11px 18px;border-radius:10px;font-size:13px;z-index:30}
+
+@media(max-width:1000px){.stats,.quick{grid-template-columns:1fr 1fr}.lower{grid-template-columns:1fr}}
+@media(max-width:820px){
+  .app{grid-template-columns:minmax(0,1fr);background:var(--bg)}
+  .side{position:fixed;inset:0 auto 0 0;width:236px;z-index:20;transform:translateX(-100%);transition:transform .25s}
+  .side.open{transform:none}
+  .menu{display:block}
+  .top{padding:12px 14px}.content{padding:18px 14px 32px}
+  .search{display:none}
+  .head{flex-direction:column}
+}
+@media(max-width:520px){.stats,.quick{grid-template-columns:1fr}}
+
+/* MANAGE USERS */
+.chips{display:flex;align-items:center;gap:8px;margin:0 0 16px;flex-wrap:wrap}
+.chip{line-height:1.2;border:1.5px solid var(--line);background:var(--card);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:700}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.utable{padding:8px 16px 12px}
+.utable table{min-width:860px}
+.utable th{padding:12px 8px}
+.utable td{padding:12px 8px;white-space:nowrap}
+.utable td.num{color:var(--muted);font-weight:700;width:44px}
+.utable td.nm{font-weight:600}
+.st{display:inline-block;padding:3px 12px;border-radius:99px;font-size:11px;font-weight:700}
+.st.active{background:#d6f3e0;color:#1b6b3a}.st.suspended{background:#fbdcdc;color:#a02727}
+:root[data-theme="dark"] .st.active{background:#16452c;color:#b6f0cc}
+:root[data-theme="dark"] .st.suspended{background:#5a2121;color:#ffc4c4}
+.acts{display:flex;gap:6px}
+.ab{border:1.5px solid var(--ink);background:transparent;border-radius:9px;padding:7px 14px;font-size:12px;font-weight:700}
+.ab:hover{background:var(--ink);color:var(--card)}
+.ab:disabled{opacity:.4;cursor:not-allowed;background:transparent;color:inherit}
+.count{font-size:12px;color:var(--muted);margin:0 0 0 8px;line-height:1;align-self:center}
+.mo{position:fixed;inset:0;background:rgba(10,18,32,.55);display:grid;place-items:center;z-index:40;padding:16px}
+.mo[hidden]{display:none}
+.md{background:var(--card);border-radius:16px;padding:24px;width:100%;max-width:440px;max-height:90vh;overflow:auto;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.md h2{font-size:18px;margin-bottom:14px}
+.kvl{display:grid;grid-template-columns:120px 1fr;gap:9px 12px;font-size:13px}
+.kvl dt{color:var(--muted)}.kvl dd{margin:0;font-weight:600;word-break:break-word}
+.mact{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}
+.fg input,.fg select{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:9px;background:var(--field);font-size:13px;color:var(--ink)}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--amber)}
+.ferr{min-height:18px;font-size:12px;font-weight:600;color:#d64545}
+@media(max-width:820px){.head .btn{align-self:flex-start}}
+
+/* account block at the bottom of the sidebar */
+.me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:14px 10px 4px;border-top:1px solid rgba(255,255,255,.12)}
+.me .av{flex:none}
+.who{min-width:0;flex:1;line-height:1.25}
+.who b{display:block;font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who small{font-size:11px;color:#9fb0cf}
+.lo{flex:none;width:34px;height:34px;border-radius:9px;border:1.5px solid rgba(255,255,255,.28);background:transparent;color:#fff;display:grid;place-items:center}
+a.lo{text-decoration:none}
+.me{gap:8px}
+.lo:hover{background:rgba(255,255,255,.12)}
+.lo svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.side nav a#admBell{cursor:pointer}
+
+/* MANAGE CLAIMS */
+.head{align-items:flex-start}
+.fwrap{position:relative}
+.pop{position:absolute;right:0;top:calc(100% + 8px);z-index:8;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:14px;width:250px}
+.pop[hidden]{display:none}
+.pop label{display:block;font-size:11px;font-weight:700;margin:0 0 4px}
+.pop input{width:100%;padding:9px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--field);color:var(--ink);font-size:12px;margin-bottom:10px}
+.pop .row2{display:flex;justify-content:space-between;gap:8px}
+.st.pending{background:#fde7c0;color:#8a5a00}.st.approved{background:#d6f3e0;color:#1b6b3a}.st.rejected{background:#fbdcdc;color:#a02727}
+:root[data-theme="dark"] .st.pending{background:#4a3913;color:#ffd98a}
+:root[data-theme="dark"] .st.approved{background:#16452c;color:#b6f0cc}
+:root[data-theme="dark"] .st.rejected{background:#5a2121;color:#ffc4c4}
+.ab.fill{background:var(--ink);border-color:var(--ink);color:var(--card)}
+.ab.fill:hover{filter:brightness(1.2)}
+.ab.danger{border-color:#d64545;color:#d64545}.ab.danger:hover{background:#d64545;color:#fff}
+.utable td.cid{font-weight:700}
+.md.wide{max-width:920px;padding:0}
+.rvhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:20px 24px 12px;border-bottom:1px solid var(--line)}
+.rvhead h2{margin:0;font-size:19px}
+.rvhead small{color:var(--muted);font-size:12px;margin-left:auto}
+.sec{padding:16px 24px;border-bottom:1px solid var(--line)}
+.sec:last-of-type{border-bottom:0}
+.sec h3{font-size:13px;margin-bottom:10px;letter-spacing:.01em}
+.score{display:flex;align-items:center;gap:16px;margin-bottom:12px}
+.score .big{font-size:38px;font-weight:800;line-height:1}
+.score .big small{font-size:14px;color:var(--muted);font-weight:600}
+.meter{height:10px;border-radius:99px;background:var(--line);overflow:hidden;flex:1}
+.meter u{display:block;height:100%;background:var(--amber)}
+.brk{display:grid;gap:8px}
+.br{display:grid;grid-template-columns:96px 1fr 54px;gap:6px 12px;align-items:center;font-size:12px}
+.br .meter{height:7px}
+.br b{text-align:right}
+.br .cmp{grid-column:1/-1;font-size:11px;color:var(--muted);margin:-3px 0 4px;word-break:break-word}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.box{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--bg)}
+.box h3{margin-bottom:8px}
+.ph{width:100%;height:150px;border-radius:9px;background:var(--soft);display:grid;place-items:center;color:var(--muted);font-size:12px;overflow:hidden;margin-bottom:10px}
+.ph img{width:100%;height:100%;object-fit:cover}
+.kvl.sm{grid-template-columns:96px 1fr;font-size:12px;gap:6px 10px}
+.proof{white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.55;margin:10px 0}
+.pfile img{max-width:100%;max-height:320px;border-radius:10px;border:1px solid var(--line);display:block}
+.chk{font-size:12px;color:var(--muted);margin-top:8px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+.dgrid .fg{margin:0}.dgrid .full{grid-column:1/-1}
+.fg textarea{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:9px;background:var(--field);color:var(--ink);font:inherit;font-size:13px;min-height:70px;resize:vertical}
+.fg textarea:focus{outline:none;border-color:var(--amber)}
+.rvact{display:flex;justify-content:flex-end;gap:8px;padding:14px 24px 20px;flex-wrap:wrap}
+.nonote{font-size:12px;color:var(--muted);background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:12px 14px}
+@media(max-width:700px){.two,.dgrid{grid-template-columns:1fr}.br{grid-template-columns:84px 1fr 46px}.sec,.rvhead,.rvact{padding-left:16px;padding-right:16px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side" id="side">
+    <a class="brand" href="admin-dashboard.html"><i></i><span><b>UCLM LostLink</b><small>Campus Lost and Found</small></span></a>
+    <div class="cap">ADMIN</div>
+    <nav>
+      <a href="admin-dashboard.html">Dashboard</a>
+      <a href="admin-users.html">Manage Users <span class="badge" id="bUsers"></span></a>
+      <a href="admin-claims.html" class="on">Manage Claims <span class="badge" id="bClaims"></span></a>
+      <a href="admin-items.html">Manage Items <span class="badge" id="bItems"></span></a>
+      <a href="admin-match.html">Match Results <span class="badge" id="bMatch"></span></a>
+      <a href="admin-history.html" id="admBell">History <span class="badge" id="bellN" style="display:none">0</span></a>
+      <a href="admin-settings.html">Settings</a>
+    </nav>
+    <div class="me">
+      <span class="av" id="admAvatar">--</span>
+      <div class="who"><b id="admName">Admin</b><small>Admin</small></div>
+      <a class="lo" id="userView" href="dashboard.html" aria-label="Go to user dashboard" title="User dashboard"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 9.5V20h14V9.5M10 20v-6h4v6"/></svg></a>
+      <button class="lo logout" type="button" aria-label="Log out" title="Log out"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
+    </div>
+  </aside>
+<script>
+/* Sidebar badges: show the last known numbers at once (no flash of 0 while the page loads) and remember every update. */
+(function(){var ids=['bUsers','bClaims','bItems','bMatch'],K='lostlink_badges';
+try{var c=JSON.parse(localStorage.getItem(K)||'{}');ids.forEach(function(i){var e=document.getElementById(i);if(e&&c[i]!=null)e.textContent=c[i]})}catch(x){}
+var save=function(){try{var o={};ids.forEach(function(i){var t=document.getElementById(i).textContent.trim();if(t!=='')o[i]=t});localStorage.setItem(K,JSON.stringify(o))}catch(x){}};
+new MutationObserver(save).observe(document.querySelector('.side nav'),{childList:true,characterData:true,subtree:true});})();
+</script>
+
+  <div class="main">
+    <header class="top">
+      <button class="menu" id="menu" type="button" aria-label="Open menu">☰</button>
+      <form class="search" id="searchForm" role="search"><input id="q" type="search" placeholder="Search users, claims, items" aria-label="Search users, claims, items"></form>
+      </header>
+
+    <main class="content">
+      <div class="note" id="note" role="alert"></div>
+      <div class="head">
+        <div><h1>Manage Claims</h1><p>Review proof and approve or reject</p></div>
+        <div class="fwrap">
+          <button class="ab" id="dfBtn" type="button" aria-expanded="false">Filter by date</button>
+          <div class="pop" id="dfPop" hidden>
+            <label for="dfFrom">From</label><input id="dfFrom" type="date">
+            <label for="dfTo">To</label><input id="dfTo" type="date">
+            <div class="row2"><button class="ab" id="dfClear" type="button">Clear</button><button class="ab fill" id="dfDone" type="button">Done</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="chips" role="tablist" aria-label="Filter claims">
+        <button class="chip on" data-f="pending" type="button">Pending</button>
+        <button class="chip" data-f="approved" type="button">Approved</button>
+        <button class="chip" data-f="rejected" type="button">Rejected</button>
+        <span class="count" id="count">0 claims</span>
+      </div>
+      <div class="card utable"><div class="tw"><table>
+        <thead><tr><th>Claim ID</th><th>Item</th><th>Claimant</th><th>Proof</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></div></div>
+    </main>
+  </div>
+</div>
+
+<div class="mo" id="mo" hidden><div class="md" role="dialog" aria-modal="true" aria-labelledby="mt"><h2 id="mt"></h2><div id="mb"></div><div class="mact" id="ma"></div></div></div>
+<script src="db.js"></script>
+<script>
+/* Everything here comes from MySQL (api/admin_claims.php). With no claims the list is empty. */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(m){ const t = document.createElement('div'); t.className = 'toast'; t.textContent = m; document.body.appendChild(t); setTimeout(() => t.remove(), 2800); }
+const fmtShort = iso => { const d = new Date(iso); if (isNaN(d)) return '—'; const o = { month: 'short', day: 'numeric' }; if (d.getFullYear() !== new Date().getFullYear()) o.year = 'numeric'; return d.toLocaleDateString('en-US', o); };
+const fmtFull = iso => { const d = new Date(iso); return isNaN(d) ? '—' : d.toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }); };
+const fmtDay = v => { if (!v) return '—'; const d = new Date(v + (String(v).length === 10 ? 'T00:00:00' : '')); return isNaN(d) ? esc(v) : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); };
+const dayKey = iso => { const d = new Date(iso); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const LABEL = { pending: 'Pending', approved: 'Approved', rejected: 'Rejected' };
+
+let claims = [], tab = 'pending', term = '', from = '', to = '', loaded = false;
+const qp = new URLSearchParams(location.search).get('q'); if (qp) { $('q').value = qp; term = qp.trim().toLowerCase(); }
+
+function visible() {
+  return claims.filter(c => c.status === tab
+    && (!term || (c.claimId + ' ' + c.item + ' ' + c.claimant).toLowerCase().includes(term))
+    && (!from || dayKey(c.createdAt) >= from) && (!to || dayKey(c.createdAt) <= to));
+}
+function draw() {
+  const list = visible();
+  $('count').textContent = list.length + (list.length === 1 ? ' claim' : ' claims');
+  $('dfBtn').classList.toggle('fill', !!(from || to));
+  if (!list.length) {
+    const none = !loaded ? ['', 'Loading…'] : claims.length ? ['Nothing found', 'No ' + tab + ' claims match this search or date range.'] : ['No claims yet', 'Claims appear here when students submit proof of ownership.'];
+    $('rows').innerHTML = `<tr><td colspan="7"><div class="empty"><strong>${esc(none[0])}</strong>${esc(none[1])}</div></td></tr>`;
+    return;
+  }
+  $('rows').innerHTML = list.map(c => `<tr>
+    <td class="cid">${esc(c.claimId)}</td><td>${esc(c.item)}</td><td>${esc(c.claimant)}</td><td>${esc(c.proof)}</td>
+    <td>${esc(fmtShort(c.createdAt))}</td><td><span class="st ${esc(c.status)}">${LABEL[c.status]}</span></td>
+    <td><button class="ab ${c.status === 'pending' ? 'fill' : ''}" data-open="${esc(c.claimId)}" type="button">${c.status === 'pending' ? 'Review' : 'View'}</button></td></tr>`).join('');
+}
+draw();
+
+/* ---- Review / View opens the full review page ---- */
+$('rows').addEventListener('click', e => {
+  const b = e.target.closest('[data-open]'); if (!b) return;
+  location.href = 'admin-claim-review.html?claim=' + encodeURIComponent(b.dataset.open);
+});
+
+/* ---- tabs, search, date filter ---- */
+document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+  tab = c.dataset.f; document.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === c)); draw(); }));
+$('q').addEventListener('input', () => { term = $('q').value.trim().toLowerCase(); draw(); });
+$('searchForm').addEventListener('submit', e => e.preventDefault());
+$('dfBtn').addEventListener('click', () => { const open = $('dfPop').hidden; $('dfPop').hidden = !open; $('dfBtn').setAttribute('aria-expanded', open); });
+$('dfFrom').addEventListener('input', () => { from = $('dfFrom').value; draw(); });
+$('dfTo').addEventListener('input', () => { to = $('dfTo').value; draw(); });
+$('dfClear').addEventListener('click', () => { from = to = ''; $('dfFrom').value = $('dfTo').value = ''; draw(); });
+$('dfDone').addEventListener('click', () => { $('dfPop').hidden = true; $('dfBtn').setAttribute('aria-expanded', false); });
+document.addEventListener('click', e => { if (!e.target.closest('.fwrap')) $('dfPop').hidden = true; });
+
+/* ---- sidebar ---- */
+let pending = 0;
+document.querySelectorAll('[data-soon]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); toast(a.dataset.soon + ' page is not built yet.'); }));
+$('menu').addEventListener('click', () => $('side').classList.toggle('open'));
+document.addEventListener('click', e => { if (innerWidth <= 820 && !e.target.closest('.side') && !e.target.closest('#menu')) $('side').classList.remove('open'); });
+/* Log out: db.js handles every .logout button, ends the session and returns to index.html */
+
+async function refreshBadges() {
+  try {
+    const dash = await llApi('api/admin.php'), s = dash.stats; pending = s.pendingClaims;
+    $('bUsers').textContent = s.users; $('bClaims').textContent = s.pendingClaims; $('bItems').textContent = s.availableItems; $('bMatch').textContent = s.pendingMatches; $('bellN').textContent = pending;
+    const n = (dash.admin.name || '').trim(); $('admName').textContent = n || 'Admin';
+    $('admAvatar').textContent = n ? n.split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase() : '--';
+  } catch {}
+}
+async function load() {
+  try { claims = await llApi('api/admin_claims.php'); loaded = true; draw(); refreshBadges(); }
+  catch (e) {
+    if (e.status === 403) { toast('This page is for admins only.'); setTimeout(() => location.replace('dashboard.html'), 900); return; }
+    loaded = true; draw(); const n = $('note'); n.textContent = e.message || 'Could not load claims.'; n.classList.add('show');
+  }
+}
+load();
+</script>
+</body>
+</html>
